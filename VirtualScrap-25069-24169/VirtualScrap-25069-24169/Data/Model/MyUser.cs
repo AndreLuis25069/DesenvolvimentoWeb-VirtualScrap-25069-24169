@@ -53,9 +53,16 @@ namespace VirtualScrap_25069_24169.Data.Model
         public ICollection<Post> PostsList { get; set; } = [];
         
 
+
         ///<summary>
         ///Lista de likes que este utilizador realizou
         ///</summary>
         public ICollection<Like> LikesList { get; set; } = [];
+
+
+        ///<summary>
+        ///Estado que diz se o utilizador foi "removido" ou não
+        /// </summary>
+        public bool IsDeleted { get; set; } = false;
     }
 }
