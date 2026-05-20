@@ -1,0 +1,63 @@
+﻿@page
+@model VirtualScrap_25069_24169.Pages.Posts.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Post</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Post.Id" />
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Post.Title" class="control-label"></label>
+                <input asp-for="Post.Title" class="form-control" aria-required="true"/>
+                <span asp-validation-for="Post.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Post.Description" class="control-label"></label>
+                <input asp-for="Post.Description" class="form-control" aria-required="true"/>
+                <span asp-validation-for="Post.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Post.CellPhone" class="control-label"></label>
+                <input asp-for="Post.CellPhone" class="form-control" />
+                <span asp-validation-for="Post.CellPhone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Post.PostDate" class="control-label"></label>
+                <input asp-for="Post.PostDate" class="form-control" />
+                <span asp-validation-for="Post.PostDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Post.Photo" class="control-label"></label>
+                <input asp-for="Post.Photo" class="form-control" aria-required="true"/>
+                <span asp-validation-for="Post.Photo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Post.CategoryFK" class="control-label"></label>
+                <select asp-for="Post.CategoryFK" class="form-control" asp-items="ViewBag.CategoryFK" ></select>
+                <span asp-validation-for="Post.CategoryFK" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
