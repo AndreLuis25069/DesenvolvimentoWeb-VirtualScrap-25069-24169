@@ -60,6 +60,18 @@ namespace VirtualScrap_25069_24169.Data.Model
         public string Photo { get; set; } = "";
 
         ///<summary>
+        ///Preço relativo ao produto do post
+        ///</summary>
+
+        [Required(ErrorMessage = "O {0} é de preenchimento obrigatório!")]
+        [Display(Name = "Preço")]
+        [StringLength(10)]
+        [RegularExpression("[0-9]{1,7}([,.][0-9]{1,2})?",
+            ErrorMessage = "O {0} deve ser um número com até 2 casas decimais"
+            )]
+        public string Price { get; set; } = "";
+
+        ///<summary>
         ///Categoria do post
         /// </summary>
 

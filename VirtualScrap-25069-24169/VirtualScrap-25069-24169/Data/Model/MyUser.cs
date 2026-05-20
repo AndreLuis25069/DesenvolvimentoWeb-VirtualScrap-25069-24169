@@ -19,10 +19,10 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///<summary>
         ///Numero de telefone do Utilizador
         /// </summary>
-        [Display(Name="Numero de Telefone do Utilizador")]
+        [Display(Name = "Numero de Telefone do Utilizador")]
         [StringLength(19)]
-        [RegularExpression(@"\+?[0-9]{9,18}",ErrorMessage ="O {0} é de preenchimento obrigatório")]
-        public string CellPhone { get; set; }
+        [RegularExpression(@"\+?[0-9]{9,18}", ErrorMessage = "O {0} é de preenchimento obrigatório")]
+        public string CellPhone { get; set; } = "";
 
 
         ///<summary>
@@ -44,7 +44,8 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///Chave Forasteira para ligar com a tabela de autenticação
         /// </summary>
 
-        public string IdUser { get; set; } = null!;
+        [StringLength(40)]
+        public string IdUser { get; set; } = "";
 
 
         ///<summary>
