@@ -38,7 +38,7 @@ namespace VirtualScrap_25069_24169.Data
             /// </summary>
             builder.Entity<Comment>()
             .HasOne(c => c.Autor)
-            .WithMany(u => u.Sent_Comments) 
+            .WithMany(u => u.SentComments) 
             .HasForeignKey(c => c.AutorFK)
             .OnDelete(DeleteBehavior.Restrict);
 
@@ -48,7 +48,7 @@ namespace VirtualScrap_25069_24169.Data
             /// </summary>
             builder.Entity<Comment>()
             .HasOne(c => c.Recipient)
-            .WithMany(u => u.Received_Comments) 
+            .WithMany(u => u.ReceivedComments) 
             .HasForeignKey(c => c.RecipientFK)
             .OnDelete(DeleteBehavior.Restrict);
 

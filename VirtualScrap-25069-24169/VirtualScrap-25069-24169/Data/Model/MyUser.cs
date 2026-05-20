@@ -29,14 +29,14 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///Lista de comentários feita ao utilizador
         /// </summary>
         [InverseProperty(nameof(Comment.Autor))] 
-        public ICollection<Comment> Sent_Comments { get; set; } = [];
+        public ICollection<Comment> SentComments { get; set; } = [];
 
 
         ///<summary>
         ///Lista de comentários feita Pelo utilizador
         /// </summary>
         [InverseProperty(nameof(Comment.Recipient))]
-        public ICollection<Comment> Received_Comments { get; set; } = [];
+        public ICollection<Comment> ReceivedComments { get; set; } = [];
 
 
 
