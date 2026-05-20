@@ -25,16 +25,6 @@
                 <span asp-validation-for="MyUser.CellPhone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MyUser.IdUser" class="control-label"></label>
-                <input asp-for="MyUser.IdUser" class="form-control" />
-                <span asp-validation-for="MyUser.IdUser" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="MyUser.IsDeleted" /> @Html.DisplayNameFor(model => model.MyUser.IsDeleted)
-                </label>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
