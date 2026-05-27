@@ -11,7 +11,8 @@
     <hr />
     <div class="row">
     <div class="col-md-4">
-    <form method="post">
+        <form method="post" enctype="multipart/form-data">
+
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <span class="text-danger">*</span>
@@ -28,9 +29,9 @@
 
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="Post.Price" class="control-label"></label>
-                <input asp-for="Post.Price" class="form-control" aria-required="true" />
-                <span asp-validation-for="Post.Price" class="text-danger"></span>
+                <label asp-for="Post.AuxPrice" class="control-label"></label>
+                <input asp-for="Post.AuxPrice" class="form-control" aria-required="true" />
+                <span asp-validation-for="Post.AuxPrice" class="text-danger"></span>
             </div>
            
             <div class="form-group">
@@ -41,7 +42,7 @@
                 accept=".jpeg ,.jpg, .png"
                 class="form-control"
                 />
-                <span asp-validation-for="Post.Photo" class="text-danger"></span>
+                <span asp-validation-for="ImagePost" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Post.CategoryFK" class="control-label"></label>
@@ -53,6 +54,7 @@
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+        <div asp-validation-summary="All" class="text-danger"></div>
     </div>
 </div>
 

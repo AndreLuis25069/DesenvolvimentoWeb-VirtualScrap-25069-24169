@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -57,26 +58,34 @@ namespace VirtualScrap_25069_24169.Data.Model
         [Display(Name = "Foto")]
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatório!")]
         [StringLength(50)]
+        [ValidateNever]
         public string Photo { get; set; } = "";
+
+
 
         ///<summary>
         ///Preço relativo ao produto do post
         ///</summary>
+        [Precision(9, 2)]
+        public decimal Price { get; set; } 
 
+
+
+        /// <summary>
+        /// Variavel auxiliar para a conversão do preço recebido em string, para um valor decimal face as regras da lingua portuguesa
+        /// </summary>
+        [NotMapped]
         [Required(ErrorMessage = "O {0} é de preenchimento obrigatório!")]
         [Display(Name = "Preço")]
         [StringLength(10)]
-        [RegularExpression("[0-9]{1,7}([,.][0-9]{1,2})?",
-            ErrorMessage = "O {0} deve ser um número com até 2 casas decimais"
-            )]
-        public string Price { get; set; } = "";
+        [RegularExpression("[0-9]{1,7}([,.][0-9]{1,2})?",ErrorMessage = "O {0} deve ser um número com até 2 casas decimais")]
+        public string AuxPrice { get; set; } = "";
 
-        ///<summary>
-        ///Categoria do post
-        /// </summary>
 
-        
-        [ValidateNever]
+       ///<summary>
+       ///Categoria do post
+       /// </summary>
+       [ValidateNever]
         public Category PostCategory { get; set; } = null!;
 
         /// <summary>
