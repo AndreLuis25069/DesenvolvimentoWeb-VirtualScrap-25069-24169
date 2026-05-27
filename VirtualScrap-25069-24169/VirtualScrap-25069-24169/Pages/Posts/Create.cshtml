@@ -25,20 +25,29 @@
                 <input asp-for="Post.Description" class="form-control" aria-required="true"/>
                 <span asp-validation-for="Post.Description" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Post.CellPhone" class="control-label"></label>
-                <input asp-for="Post.CellPhone" class="form-control" />
-                <span asp-validation-for="Post.CellPhone" class="text-danger"></span>
+                <span class="text-danger">*</span>
+                <label asp-for="Post.Price" class="control-label"></label>
+                <input asp-for="Post.Price" class="form-control" aria-required="true" />
+                <span asp-validation-for="Post.Price" class="text-danger"></span>
             </div>
+           
             <div class="form-group">
                 <span class="text-danger">*</span>
                 <label asp-for="Post.Photo" class="control-label"></label>
-                <input asp-for="Post.Photo" class="form-control" aria-required="true"/>
+                <input asp-for="ImagePost"
+                type ="file"
+                accept=".jpeg ,.jpg, .png"
+                class="form-control"
+                />
                 <span asp-validation-for="Post.Photo" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Post.CategoryFK" class="control-label"></label>
-                <select asp-for="Post.CategoryFK" class ="form-control" asp-items="ViewBag.CategoryFK" ></select>
+                <select asp-for="Post.CategoryFK" class="form-control" asp-items="ViewBag.CategoryFK">
+                    <option value="">-- Selecione a Categoria --</option>
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

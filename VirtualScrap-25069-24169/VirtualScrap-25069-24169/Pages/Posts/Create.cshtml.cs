@@ -21,18 +21,21 @@ namespace VirtualScrap_25069_24169.Pages.Posts
 
         public IActionResult OnGet()
         {
-        ViewData["CategoryFK"] = new SelectList(_context.Categories, "Id", "Id");
+        ViewData["CategoryFK"] = new SelectList(_context.Categories.OrderBy(d=>d.Name), "Id", "Name");
             return Page();
         }
 
         [BindProperty]
         public Post Post { get; set; } = default!;
 
+        public IFormFile ImagePost { get; set; } = default!;
+
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                ViewData["CategoryFK"] = new SelectList(_context.Categories.OrderBy(d => d.Name), "Id", "Name");
                 return Page();
             }
 
