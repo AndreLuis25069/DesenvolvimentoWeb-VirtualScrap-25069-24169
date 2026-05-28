@@ -1,4 +1,7 @@
+using brevo_csharp.Api;
+using brevo_csharp.Client;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using VirtualScrap_25069_24169.Data;
 
@@ -14,8 +17,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+//Configurar o SDK da Brevo
+var brevoApiKey = builder.Configuration["BrevoSettings:ApiKey"];
+Configuration.Default.ApiKey["api-key"] = brevoApiKey;
 
+// Registar a API de e-mails transacionais como Singleton ou Scoped
+builder.Services.AddScoped<TransactionalEmailsApi>();
+builder.Services.AddHttpClient<IEmailSender, BrevoEmailSender>();
 
+builder.Services.AddControllers();
 
 
 var app = builder.Build();
