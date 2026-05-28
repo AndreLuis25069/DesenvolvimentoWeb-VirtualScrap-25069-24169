@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtualScrap_25069_24169.Data;
 
@@ -11,9 +12,11 @@ using VirtualScrap_25069_24169.Data;
 namespace VirtualScrap_25069_24169.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260528222158_AdicaoDaLocalizacaoEDonoDoPostNaClassePost")]
+    partial class AdicaoDaLocalizacaoEDonoDoPostNaClassePost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,12 +261,17 @@ namespace VirtualScrap_25069_24169.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int?>("PostId")
+                        .HasColumnType("int");
+
                     b.Property<int>("RecipientFK")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AutorFK");
+
+                    b.HasIndex("PostId");
 
                     b.HasIndex("RecipientFK");
 
@@ -342,6 +350,9 @@ namespace VirtualScrap_25069_24169.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("MyUserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OwnerFK")
                         .HasColumnType("int");
 
@@ -367,41 +378,9 @@ namespace VirtualScrap_25069_24169.Migrations
 
                     b.HasIndex("CategoryFK");
 
-                    b.HasIndex("OwnerFK");
+                    b.HasIndex("MyUserId");
 
                     b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("VirtualScrap_25069_24169.Data.Model.PostComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AutorFK")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CommentDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("PostFK")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AutorFK");
-
-                    b.HasIndex("PostFK");
-
-                    b.ToTable("PostComments");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -463,6 +442,10 @@ namespace VirtualScrap_25069_24169.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", null)
+                        .WithMany("Commentaries")
+                        .HasForeignKey("PostId");
+
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "Recipient")
                         .WithMany("ReceivedComments")
                         .HasForeignKey("RecipientFK")
@@ -501,34 +484,11 @@ namespace VirtualScrap_25069_24169.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "PostOwner")
+                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", null)
                         .WithMany("PostsList")
-                        .HasForeignKey("OwnerFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MyUserId");
 
                     b.Navigation("PostCategory");
-
-                    b.Navigation("PostOwner");
-                });
-
-            modelBuilder.Entity("VirtualScrap_25069_24169.Data.Model.PostComment", b =>
-                {
-                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "Autor")
-                        .WithMany()
-                        .HasForeignKey("AutorFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", "CommentedPost")
-                        .WithMany("Commentaries")
-                        .HasForeignKey("PostFK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Autor");
-
-                    b.Navigation("CommentedPost");
                 });
 
             modelBuilder.Entity("VirtualScrap_25069_24169.Data.Model.MyUser", b =>
