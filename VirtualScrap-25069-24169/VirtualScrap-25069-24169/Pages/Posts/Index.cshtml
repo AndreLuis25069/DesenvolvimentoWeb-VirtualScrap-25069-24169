@@ -49,12 +49,26 @@
                         @item.Description
                     </p>
 
-                    <div class="mt-auto pt-1 border-top d-flex justify-content-between text-secondary" style="font-size: 0.7rem;">
-                        <span>@item.PostDate.ToString("dd/MM/yyyy")</span>
-                        @if (!string.IsNullOrEmpty(item.CellPhone))
-                        {
-                            <span class="text-truncate" style="max-width: 80px;">@item.CellPhone</span>
-                        }
+                    <div class="mt-auto pt-2 border-top text-secondary" style="font-size: 0.75rem;">
+                        <div class="row g-0 mb-1">
+                            <div class="col-6 text-start">
+                                <span>📅 @item.PostDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                @if (!string.IsNullOrEmpty(item.CellPhone))
+                                {
+                                    <span class="text-truncate d-inline-block" style="max-width: 90px;" title="@item.CellPhone">
+                                        📞 @item.CellPhone
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row g-0">
+                            <div class="col-12 text-start text-truncate">
+                                <span>📍 @(string.IsNullOrEmpty(item.Localizacao)   ? "Portugal" : item.Localizacao+", Portugal")</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

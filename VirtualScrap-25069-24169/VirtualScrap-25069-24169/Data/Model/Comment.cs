@@ -50,5 +50,7 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///Objeto do tipo MyUser para o destinatário
         ///</summary>
         public MyUser Recipient { get; set; } = null!;
+
+        
     }
 }

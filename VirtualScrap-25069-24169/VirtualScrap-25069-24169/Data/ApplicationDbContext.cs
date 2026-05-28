@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using VirtualScrap_25069_24169.Data.Model; 
 
 namespace VirtualScrap_25069_24169.Data
@@ -17,6 +18,7 @@ namespace VirtualScrap_25069_24169.Data
         public DbSet<Post> Posts { get; set; } 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Like> Likes { get; set; }
+        public DbSet<PostComment> PostComments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -52,6 +54,17 @@ namespace VirtualScrap_25069_24169.Data
             .HasForeignKey(c => c.RecipientFK)
             .OnDelete(DeleteBehavior.Restrict);
 
+
+            /// <summary>
+            /// Metodo para fazer com que no momento de remoção de um Post, os comentarios recebidos no mesmo sejam eliminados
+            /// em CASCADE.
+            /// </summary>
+            builder.Entity<PostComment>()
+            .HasOne(c => c.CommentedPost)
+            .WithMany(p => p.Commentaries)
+            .HasForeignKey(c => c.PostFK)
+            .OnDelete(DeleteBehavior.Cascade);
         }
+
     }
-}
+    }

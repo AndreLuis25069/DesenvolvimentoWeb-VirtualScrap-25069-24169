@@ -21,6 +21,9 @@ namespace VirtualScrap_25069_24169.Pages.Posts
 
         public Post Post { get; set; } = default!;
 
+        [BindProperty]
+        public PostComment PostComment  { get; set; } = default!;
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -28,13 +31,21 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                 return NotFound();
             }
 
-            var post = await _context.Posts.FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _context.Posts
+                .Include(p => p.PostCategory)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (post is not null)
             {
                 Post = post;
-
+                
                 return Page();
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Posts.Add(Post);
+                await _context.SaveChangesAsync();
             }
 
             return NotFound();
