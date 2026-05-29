@@ -12,8 +12,8 @@ using VirtualScrap_25069_24169.Data;
 namespace VirtualScrap_25069_24169.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260527105446_AlgunsUpdates")]
-    partial class AlgunsUpdates
+    [Migration("20260529110758_PrimeiraCriacaoAposLimpezaDasMigracoes")]
+    partial class PrimeiraCriacaoAposLimpezaDasMigracoes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,10 +170,12 @@ namespace VirtualScrap_25069_24169.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -210,10 +212,12 @@ namespace VirtualScrap_25069_24169.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -340,7 +344,15 @@ namespace VirtualScrap_25069_24169.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<string>("Localizacao")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int?>("MyUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OwnerFK")
                         .HasColumnType("int");
 
                     b.Property<string>("Photo")
@@ -367,7 +379,41 @@ namespace VirtualScrap_25069_24169.Migrations
 
                     b.HasIndex("MyUserId");
 
+                    b.HasIndex("OwnerFK");
+
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("VirtualScrap_25069_24169.Data.Model.PostComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AutorFK")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CommentDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PostFK")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutorFK");
+
+                    b.HasIndex("PostFK");
+
+                    b.ToTable("PostComments");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -445,13 +491,13 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "LikeAutor")
                         .WithMany("LikesList")
                         .HasForeignKey("LikeAutorFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", "LikedPost")
                         .WithMany("LikesList")
                         .HasForeignKey("PostFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LikeAutor");
@@ -471,7 +517,34 @@ namespace VirtualScrap_25069_24169.Migrations
                         .WithMany("PostsList")
                         .HasForeignKey("MyUserId");
 
+                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "PostOwner")
+                        .WithMany()
+                        .HasForeignKey("OwnerFK")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("PostCategory");
+
+                    b.Navigation("PostOwner");
+                });
+
+            modelBuilder.Entity("VirtualScrap_25069_24169.Data.Model.PostComment", b =>
+                {
+                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "Autor")
+                        .WithMany()
+                        .HasForeignKey("AutorFK")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", "CommentedPost")
+                        .WithMany("Commentaries")
+                        .HasForeignKey("PostFK")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Autor");
+
+                    b.Navigation("CommentedPost");
                 });
 
             modelBuilder.Entity("VirtualScrap_25069_24169.Data.Model.MyUser", b =>
@@ -487,6 +560,8 @@ namespace VirtualScrap_25069_24169.Migrations
 
             modelBuilder.Entity("VirtualScrap_25069_24169.Data.Model.Post", b =>
                 {
+                    b.Navigation("Commentaries");
+
                     b.Navigation("LikesList");
                 });
 #pragma warning restore 612, 618

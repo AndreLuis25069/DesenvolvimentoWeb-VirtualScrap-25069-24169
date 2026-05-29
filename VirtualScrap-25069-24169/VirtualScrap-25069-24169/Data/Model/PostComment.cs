@@ -51,7 +51,7 @@ namespace VirtualScrap_25069_24169.Data.Model
             /// <summary>
             /// Chave estrangeira do post comentado
             /// </summary>
-            [ForeignKey(nameof(PostFK))]
+            [ForeignKey(nameof(CommentedPost))]
             public int PostFK { get; set; }
 
 

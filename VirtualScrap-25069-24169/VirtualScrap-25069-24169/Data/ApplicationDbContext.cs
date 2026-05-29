@@ -55,16 +55,64 @@ namespace VirtualScrap_25069_24169.Data
             .OnDelete(DeleteBehavior.Restrict);
 
 
+
+            //////CONFIGURAÇÃO POSTS
+
+            builder.Entity<Post>()
+            .HasOne(p => p.PostOwner)
+            .WithMany() // Se o teu MyUser tiver uma propriedade "MyPosts", coloca aqui (ex: u.MyPosts)
+            .HasForeignKey(p => p.OwnerFK)
+            .OnDelete(DeleteBehavior.Restrict);
+
+
+
             /// <summary>
             /// Metodo para fazer com que no momento de remoção de um Post, os comentarios recebidos no mesmo sejam eliminados
             /// em CASCADE.
             /// </summary>
             builder.Entity<PostComment>()
-            .HasOne(c => c.CommentedPost)
-            .WithMany(p => p.Commentaries)
-            .HasForeignKey(c => c.PostFK)
+            .HasOne(c => c.CommentedPost)      
+            .WithMany(p => p.Commentaries)     
+            .HasForeignKey(c => c.PostFK)    
             .OnDelete(DeleteBehavior.Cascade);
+
+            ///<summary>
+            ///Quando um utilizador que comentou for removido, o programa nao vai eliminar os comentarios que ele fez
+            ///</summary>
+            builder.Entity<PostComment>()
+            .HasOne(c => c.Autor)
+            .WithMany() 
+            .HasForeignKey(c => c.AutorFK)
+            .OnDelete(DeleteBehavior.Restrict); //
+
+
+
+            ///CONFIGURAÇÃO DOS LIKES
+
+            ///<summary>
+            ///Se um post for eliminado os seus likes tambem vão ser
+            ///</summary >
+            builder.Entity<Like>()
+            .HasOne(l => l.LikedPost)
+            .WithMany(p => p.LikesList) 
+            .HasForeignKey(l => l.PostFK)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+            ///<summary>
+            ///Se um utilizador for eliminado os seus likes não vão ser
+            ///</summary>
+            builder.Entity<Like>()
+            .HasOne(l => l.LikeAutor)
+            .WithMany(u => u.LikesList) 
+            .HasForeignKey(l => l.LikeAutorFK)
+            .OnDelete(DeleteBehavior.Restrict);
+
         }
+
+
+
+
 
     }
     }

@@ -12,8 +12,8 @@ using VirtualScrap_25069_24169.Data;
 namespace VirtualScrap_25069_24169.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260528234243_ForeignKeyParaPostNoComentarioMaisDonoNoPost")]
-    partial class ForeignKeyParaPostNoComentarioMaisDonoNoPost
+    [Migration("20260529111005_TentativaDeAtivarAlgunsCascades")]
+    partial class TentativaDeAtivarAlgunsCascades
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,10 +170,12 @@ namespace VirtualScrap_25069_24169.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -210,10 +212,12 @@ namespace VirtualScrap_25069_24169.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -345,6 +349,9 @@ namespace VirtualScrap_25069_24169.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("MyUserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OwnerFK")
                         .HasColumnType("int");
 
@@ -369,6 +376,8 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryFK");
+
+                    b.HasIndex("MyUserId");
 
                     b.HasIndex("OwnerFK");
 
@@ -482,7 +491,7 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "LikeAutor")
                         .WithMany("LikesList")
                         .HasForeignKey("LikeAutorFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", "LikedPost")
@@ -504,10 +513,14 @@ namespace VirtualScrap_25069_24169.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "PostOwner")
+                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", null)
                         .WithMany("PostsList")
+                        .HasForeignKey("MyUserId");
+
+                    b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "PostOwner")
+                        .WithMany()
                         .HasForeignKey("OwnerFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PostCategory");
@@ -520,7 +533,7 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "Autor")
                         .WithMany()
                         .HasForeignKey("AutorFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", "CommentedPost")

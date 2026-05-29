@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VirtualScrap_25069_24169.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimeiraMigracaoDoModeloDaBaseDeDados : Migration
+    public partial class PrimeiraCriacaoAposLimpezaDasMigracoes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,7 +71,7 @@ namespace VirtualScrap_25069_24169.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CellPhone = table.Column<string>(type: "nvarchar(19)", maxLength: 19, nullable: false),
-                    IdUser = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdUser = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -125,8 +125,8 @@ namespace VirtualScrap_25069_24169.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -170,8 +170,8 @@ namespace VirtualScrap_25069_24169.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -224,7 +224,10 @@ namespace VirtualScrap_25069_24169.Migrations
                     CellPhone = table.Column<string>(type: "nvarchar(19)", maxLength: 19, nullable: false),
                     PostDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Photo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(9,2)", precision: 9, scale: 2, nullable: false),
+                    Localizacao = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CategoryFK = table.Column<int>(type: "int", nullable: false),
+                    OwnerFK = table.Column<int>(type: "int", nullable: false),
                     MyUserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -241,6 +244,12 @@ namespace VirtualScrap_25069_24169.Migrations
                         column: x => x.MyUserId,
                         principalTable: "MyUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Posts_MyUsers_OwnerFK",
+                        column: x => x.OwnerFK,
+                        principalTable: "MyUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -258,13 +267,41 @@ namespace VirtualScrap_25069_24169.Migrations
                         column: x => x.LikeAutorFK,
                         principalTable: "MyUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Likes_Posts_PostFK",
                         column: x => x.PostFK,
                         principalTable: "Posts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PostComments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    CommentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AutorFK = table.Column<int>(type: "int", nullable: false),
+                    PostFK = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PostComments_MyUsers_AutorFK",
+                        column: x => x.AutorFK,
+                        principalTable: "MyUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PostComments_Posts_PostFK",
+                        column: x => x.PostFK,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -322,6 +359,16 @@ namespace VirtualScrap_25069_24169.Migrations
                 column: "PostFK");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PostComments_AutorFK",
+                table: "PostComments",
+                column: "AutorFK");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostComments_PostFK",
+                table: "PostComments",
+                column: "PostFK");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_CategoryFK",
                 table: "Posts",
                 column: "CategoryFK");
@@ -330,6 +377,11 @@ namespace VirtualScrap_25069_24169.Migrations
                 name: "IX_Posts_MyUserId",
                 table: "Posts",
                 column: "MyUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_OwnerFK",
+                table: "Posts",
+                column: "OwnerFK");
         }
 
         /// <inheritdoc />
@@ -355,6 +407,9 @@ namespace VirtualScrap_25069_24169.Migrations
 
             migrationBuilder.DropTable(
                 name: "Likes");
+
+            migrationBuilder.DropTable(
+                name: "PostComments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
