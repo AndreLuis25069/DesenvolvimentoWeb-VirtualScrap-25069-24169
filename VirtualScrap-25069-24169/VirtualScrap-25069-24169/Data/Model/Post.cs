@@ -102,6 +102,8 @@ namespace VirtualScrap_25069_24169.Data.Model
         public int CategoryFK { get; set; }
 
 
+        [ValidateNever]
+        [Display(Name = "Autor")]
         public MyUser PostOwner { get; set; }
 
         [Display(Name = "Vendedor")]

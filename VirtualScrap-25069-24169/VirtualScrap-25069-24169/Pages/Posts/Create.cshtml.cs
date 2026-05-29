@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
@@ -15,6 +18,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
     public class CreateModel : PageModel
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
+        private readonly UserManager<MyUser> _userManager;
 
         private readonly  IWebHostEnvironment _webHostEnvironment;
         public CreateModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
@@ -22,6 +26,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+         
         }
 
         public IActionResult OnGet()
@@ -72,13 +77,19 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             Post.Price = Convert.ToDecimal(Post.AuxPrice.Replace('.', ','),
                                                new CultureInfo("pt-PT"));
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentMyUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser.ToString() == userId);
+            Post.PostOwner = currentMyUser;
+            Post.CellPhone = Post.PostOwner.CellPhone;
+
             if (!ModelState.IsValid)
             {
                 ViewData["CategoryFK"] = new SelectList(_context.Categories.OrderBy(d => d.Name), "Id", "Name");
                 return Page();
             }
 
-
+          
+            
             try
             {
                 _context.Posts.Add(Post);

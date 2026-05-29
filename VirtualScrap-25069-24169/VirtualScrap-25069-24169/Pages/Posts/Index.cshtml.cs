@@ -24,7 +24,9 @@ namespace VirtualScrap_25069_24169.Pages.Posts
         public async Task OnGetAsync()
         {
             Post = await _context.Posts
-                .Include(p => p.PostCategory).ToListAsync();
+             .Include(p => p.PostCategory)  
+             .Include(p => p.PostOwner)    
+             .ToListAsync();
         }
     }
 }
