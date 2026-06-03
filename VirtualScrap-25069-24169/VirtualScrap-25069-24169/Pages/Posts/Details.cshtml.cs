@@ -42,11 +42,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                 return Page();
             }
 
-            if (ModelState.IsValid)
-            {
-                _context.Posts.Add(Post);
-                await _context.SaveChangesAsync();
-            }
+          
 
             return NotFound();
         }

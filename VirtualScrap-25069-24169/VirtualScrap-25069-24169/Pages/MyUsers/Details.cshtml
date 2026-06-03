@@ -1,31 +1,179 @@
 ﻿@page
+@using VirtualScrap_25069_24169.Data.Model
 @model VirtualScrap_25069_24169.Pages.MyUsers.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Perfil do Utilizador";
 }
 
-<h1>Details</h1>
+<div class="container my-4" style="max-width: 800px;">
+    <div class="mb-4">
+        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">
+            ← Voltar à Lista
+        </a>
+    </div>
 
-<div>
-    <h4>MyUser</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MyUser.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MyUser.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MyUser.CellPhone)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MyUser.CellPhone)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.MyUser.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <div class="card border-light shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+            
+            <div class="d-flex align-items-center gap-3 mb-4">
+                
+                <div class="flex-shrink-0">
+                    @if (!string.IsNullOrEmpty(Model.MyUser.Photo))
+                    {
+                        <div class="rounded-circle overflow-hidden shadow-sm" style="width: 90px; height: 90px;">
+                            <img src="~/images1/@Model.MyUser.Photo" class="w-100 h-100 object-fit-cover" alt="@Model.MyUser.Name" asp-append-version="true" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center shadow-sm text-muted fw-bold fs-2"
+                             style="width: 90px; height: 90px;">
+                            @Model.MyUser.Name.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+                </div>
+
+                <div>
+                    <span class="badge bg-dark text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                        Membro VirtualScrap
+                    </span>
+                    <h1 class="h3 text-dark fw-bold mb-0">@Model.MyUser.Name</h1>
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <span class="fs-5">👤</span>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Nome Completo</small>
+                            <span class="text-dark fw-medium">@Model.MyUser.Name</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <span class="fs-5">📞</span>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Contacto Telefónico</small>
+                            <span class="text-dark fw-medium">
+                                @(string.IsNullOrEmpty(Model.MyUser.CellPhone) ? "Não disponível" : Model.MyUser.CellPhone)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+            @if (!string.IsNullOrEmpty(Model.MyUser.CellPhone))
+            {
+                <div class="bg-light p-3 rounded-3 d-flex align-items-center justify-content-between mb-4">
+                    <div class="small text-secondary">
+                        Necessita de falar com este utilizador? Pode efetuar uma chamada direta.
+                    </div>
+                    <a href="tel:@Model.MyUser.CellPhone" class="btn btn-sm btn-dark rounded-pill px-3 flex-shrink-0">
+                        Ligar Agora
+                    </a>
+                </div>
+            }
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="./Edit" asp-route-id="@Model.MyUser.Id" class="btn btn-sm btn-outline-dark px-3 fw-medium">
+                    ✏️ Editar Perfil
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card border-light shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <h5 class="text-dark fw-bold mb-4">💬 Avaliações & Comentários</h5>
+
+            <form method="post" class="mb-4 bg-light p-3 rounded-3">
+                <small class="text-muted d-block fw-bold mb-2" style="font-size: 0.65rem; letter-spacing: 0.5px;">AVALIAR ESTE UTILIZADOR</small>
+                
+                <div class="row g-2 align-items-center mb-2">
+                    <div class="col-auto">
+                        <select asp-for="Comment.Rating" name="NewRating" class="form-select form-select-sm border-0 bg-white shadow-sm" style="border-radius: 20px;">
+                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                            <option value="3">⭐⭐⭐ (3/5)</option>
+                            <option value="2">⭐⭐ (2/5)</option>
+                            <option value="1">⭐ (1/5)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="position-relative">
+                    <textarea asp-for="Comment.Description"
+                              class="form-control bg-white border-0 shadow-sm"
+                              rows="2"
+                              placeholder="Escreve uma avaliação sobre a tua experiência com este utilizador..."
+                              style="font-size: 0.85rem; resize: none; border-radius: 15px; padding-right: 50px;"
+                              required
+                    "></textarea>
+                    
+                    <button type="submit"
+                            class="btn btn-dark rounded-circle position-absolute d-flex align-items-center justify-content-center shadow-sm"
+                            style="right: 12px; bottom: 12px; width: 32px; height: 32px; padding: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-send-fill text-white" viewBox="0 0 16 16">
+                            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <div class="d-flex flex-column gap-3">
+                
+                @if (Model.MyUser.ReceivedComments != null && Model.MyUser.ReceivedComments.Any())
+                {
+                    @foreach (var comment in Model.MyUser.ReceivedComments)
+                    {
+                        <div class="d-flex gap-2 align-items-start">
+                            <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center flex-shrink-0 fw-bold"
+                                 style="width: 36px; height: 36px; font-size: 0.8rem;">
+                                @comment.Autor.Name.Substring(0, 1).ToUpper()
+                            </div>
+
+                            <div class="bg-light p-3 rounded-3 w-100" style="border-top-left-radius: 0px !important;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-bold text-dark small">@comment.Autor.Name</span>
+                                    <span class="text-muted" style="font-size: 0.65rem;">
+                                        📅 @comment.CommentDate.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                </div>
+                                
+                                <div class="text-warning mb-1" style="font-size: 0.75rem;">
+                                    @string.Concat(Enumerable.Repeat("⭐", comment.Rating))
+                                </div>
+
+                                <p class="text-secondary m-0" style="font-size: 0.85rem; white-space: pre-line;">
+                                    @comment.Description
+                                </p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted bg-light rounded-3">
+                        <span class="d-block small">⭐ Este utilizador ainda não tem feedback. Sê o primeiro a avaliar!</span>
+                    </div>
+                }
+                
+            </div>
+
+        </div>
+    </div>
 </div>

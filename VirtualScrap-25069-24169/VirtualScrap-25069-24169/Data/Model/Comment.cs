@@ -51,6 +51,11 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///</summary>
         public MyUser Recipient { get; set; } = null!;
 
+        /// <summary>
+        /// Valor para as avalições dadas no momento dos comentarios de um perfil 
+        /// </summary>
+        [Display(Name ="Rating")]
+        public int Rating { get; set; } = 5;
         
     }
 }

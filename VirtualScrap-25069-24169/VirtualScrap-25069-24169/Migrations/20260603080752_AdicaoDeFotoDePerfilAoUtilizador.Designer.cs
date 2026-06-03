@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtualScrap_25069_24169.Data;
 
@@ -11,9 +12,11 @@ using VirtualScrap_25069_24169.Data;
 namespace VirtualScrap_25069_24169.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260603080752_AdicaoDeFotoDePerfilAoUtilizador")]
+    partial class AdicaoDeFotoDePerfilAoUtilizador
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,9 +264,6 @@ namespace VirtualScrap_25069_24169.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
 
                     b.Property<int>("RecipientFK")
                         .HasColumnType("int");
