@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VirtualScrap_25069_24169.Data.Model
@@ -65,5 +66,15 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///Estado que diz se o utilizador foi "removido" ou não
         /// </summary>
         public bool IsDeleted { get; set; } = false;
+
+
+        ///<summary>
+        ///variavel dedicada para a foto de perfil
+        /// </summary>
+   
+        [Display(Name = "Foto de Perfil")]
+        [StringLength(50)]
+        [ValidateNever]
+        public string Photo { get; set; } = "";
     }
 }
