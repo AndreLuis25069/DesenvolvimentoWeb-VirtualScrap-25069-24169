@@ -46,11 +46,6 @@ namespace VirtualScrap_25069_24169.Pages.Posts
         public async Task<IActionResult> OnPostAsync()
         {
 
-
-
-
-           
-
             //Verificar se o utilizador deu input no campo
             if (ImagePost == null)
             {

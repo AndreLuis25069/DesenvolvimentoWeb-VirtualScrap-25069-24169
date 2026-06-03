@@ -1,31 +1,106 @@
 ﻿@page
+@using VirtualScrap_25069_24169.Data.Model
 @model VirtualScrap_25069_24169.Pages.MyUsers.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Perfil do Utilizador";
 }
 
-<h1>Details</h1>
+<div class="container my-4" style="max-width: 800px;">
+    <!-- Botão de Voltar -->
+    <div class="mb-4">
+        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">
+            ← Voltar à Lista
+        </a>
+    </div>
 
-<div>
-    <h4>MyUser</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MyUser.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MyUser.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MyUser.CellPhone)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MyUser.CellPhone)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.MyUser.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <!-- Cartão Principal de Perfil -->
+    <div class="card border-light shadow-sm rounded-3">
+        <div class="card-body p-4">
+            
+           
+            <div class="d-flex align-items-center gap-3 mb-4">
+                
+   
+                <div class="flex-shrink-0">
+                    @if (!string.IsNullOrEmpty(Model.MyUser.Photo))
+                    {
+                        <div class="rounded-circle overflow-hidden shadow-sm" style="width: 90px; height: 90px;">
+                            <img src="~/images1/@Model.MyUser.Photo" class="w-100 h-100 object-fit-cover" alt="@Model.MyUser.Name" asp-append-version="true" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center shadow-sm text-muted fw-bold fs-2"
+                             style="width: 90px; height: 90px;">
+                            @Model.MyUser.Name.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+                </div>
+
+         
+                <div>
+                    <span class="badge bg-dark text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                        Membro VirtualScrap
+                    </span>
+                    <h1 class="h3 text-dark fw-bold mb-0">@Model.MyUser.Name</h1>
+                   
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+            <!-- Secção de Informações Detalhadas -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <span class="fs-5">👤</span>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Nome Completo</small>
+                            <span class="text-dark fw-medium">@Model.MyUser.Name</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <span class="fs-5">📞</span>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Contacto Telefónico</small>
+                            <span class="text-dark fw-medium">
+                                @(string.IsNullOrEmpty(Model.MyUser.CellPhone) ? "Não disponível" : Model.MyUser.CellPhone)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caixa de Ação de Contacto (Apenas se houver telemóvel) -->
+            @if (!string.IsNullOrEmpty(Model.MyUser.CellPhone))
+            {
+                <div class="bg-light p-3 rounded-3 d-flex align-items-center justify-content-between mb-4">
+                    <div class="small text-secondary">
+                        Necessita de falar com este utilizador? Pode efetuar uma chamada direta.
+                    </div>
+                    <a href="tel:@Model.MyUser.CellPhone" class="btn btn-sm btn-dark rounded-pill px-3 flex-shrink-0">
+                        Ligar Agora
+                    </a>
+                </div>
+            }
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="./Edit" asp-route-id="@Model.MyUser.Id" class="btn btn-sm btn-outline-dark px-3 fw-medium">
+                    ✏️ Editar Perfil
+                </a>
+            </div>
+
+        </div>
+    </div>
 </div>

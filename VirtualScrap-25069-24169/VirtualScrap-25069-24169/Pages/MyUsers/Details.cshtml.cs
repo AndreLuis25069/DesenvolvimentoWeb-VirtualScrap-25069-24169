@@ -20,7 +20,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
         }
 
         public MyUser MyUser { get; set; } = default!;
-
+        
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)

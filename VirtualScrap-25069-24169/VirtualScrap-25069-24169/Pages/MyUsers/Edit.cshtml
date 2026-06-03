@@ -11,11 +11,11 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="MyUser.Id" />
             <div class="form-group">
-<span class="text-danger">*</span>
+    <span class="text-danger">*</span>
                 <label asp-for="MyUser.Name" class="control-label"></label>
                 <input asp-for="MyUser.Name" class="form-control" aria-required="true"/>
                 <span asp-validation-for="MyUser.Name" class="text-danger"></span>
@@ -25,6 +25,17 @@
                 <input asp-for="MyUser.CellPhone" class="form-control" />
                 <span asp-validation-for="MyUser.CellPhone" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="MyUser.Photo" class="control-label"></label>
+                <input asp-for="ProfileImage"
+                       type="file"
+                       accept=".jpeg ,.jpg, .png"
+                       class="form-control" />
+                <span asp-validation-for="ProfileImage" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
