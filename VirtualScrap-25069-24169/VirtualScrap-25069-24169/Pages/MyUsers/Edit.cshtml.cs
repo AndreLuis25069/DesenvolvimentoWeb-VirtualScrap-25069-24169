@@ -116,6 +116,8 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 {
                     await ProfileImage.CopyToAsync(stream);
                 }
+
+                return Page();
             }
             catch (DbUpdateConcurrencyException)
             {

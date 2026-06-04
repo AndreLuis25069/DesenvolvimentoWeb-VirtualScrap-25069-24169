@@ -29,16 +29,20 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 return NotFound();
             }
 
-            var myuser = await _context.MyUsers.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (myuser is not null)
+            //Carrega o Utilizador da base de dados 
+            MyUser = await _context.MyUsers
+                //Incluir a lista de posts que esse utilizador tem
+               .Include(u => u.PostsList)
+               .FirstOrDefaultAsync(m => m.Id == id);
+             
+            //Se for nulo retorna erro
+            if(MyUser == null)
             {
-                MyUser = myuser;
-
-                return Page();
+                return NotFound();
             }
 
-            return NotFound();
+            return Page();
+           
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
@@ -48,9 +52,14 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 return NotFound();
             }
 
+
+
+            //Vai á base de dados buscar um utilizador com o mesmo id
             var myuser = await _context.MyUsers.FindAsync(id);
+            //Se o utilizador não for nulo vai proceder para a elimação do mesmo
             if (myuser != null)
             {
+                 
                 MyUser = myuser;
                 _context.MyUsers.Remove(MyUser);
                 await _context.SaveChangesAsync();
