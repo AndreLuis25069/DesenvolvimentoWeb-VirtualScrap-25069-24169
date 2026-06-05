@@ -102,14 +102,20 @@ namespace VirtualScrap_25069_24169.Data.Model
         public int CategoryFK { get; set; }
 
 
-        [ValidateNever]
-        [Display(Name = "Autor")]
-        public MyUser PostOwner { get; set; }
 
-        [Display(Name = "Vendedor")]
-        [ForeignKey(nameof(PostOwner))]
+
         ///<summary>
         ///Dono do post anunciado
+        /// </summary>
+        [ValidateNever]
+        [Display(Name = "Autor")]
+        [ForeignKey(nameof(OwnerFK))]
+        public MyUser PostOwner { get; set; }
+
+        
+   
+        ///<summary>
+        ///Chave que liga my user com post
         /// </summary>
         public int OwnerFK { get; set; }
     }

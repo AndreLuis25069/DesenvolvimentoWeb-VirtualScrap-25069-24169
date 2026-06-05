@@ -27,6 +27,13 @@ builder.Services.AddHttpClient<IEmailSender, BrevoEmailSender>();
 
 builder.Services.AddControllers();
 
+// configurar o de uso de 'cookies'
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromSeconds(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+builder.Services.AddDistributedMemoryCache();
 
 var app = builder.Build();
 
@@ -42,6 +49,9 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+// na segunda secção, adicionar para
+// começar a usar, realmente, os 'cookies'
+app.UseSession();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -27,29 +27,39 @@ namespace VirtualScrap_25069_24169.Data.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CommentDate { get; set; } = DateTime.Now;
 
+
+
         ///<summary>
         ///Autor do Comentário/Avaliação deixada num perfil
         /// </summary>
-        [ForeignKey(nameof(Autor))]
-        public int AutorFK { get; set; }
-        [ValidateNever]
+        [ForeignKey(nameof(AutorFK))]
+        public int? AutorFK { get; set; }
+        
 
         ///<summary>
         ///Objeto do tipo MyUser para o autor
         ///</summary>
-        public MyUser Autor { get; set; } = null!;
+        
+        [ValidateNever]
+        public MyUser? Autor { get; set; } = null!;
+
+
 
         ///<summary>
         ///Autor do Comentário/Avaliação deixada num perfil
         /// </summary>
         [ForeignKey(nameof(Recipient))]
         public int RecipientFK { get; set; }
-        [ValidateNever]
+
+
 
         ///<summary>
         ///Objeto do tipo MyUser para o destinatário
         ///</summary>
+        [ValidateNever]
         public MyUser Recipient { get; set; } = null!;
+
+
 
         /// <summary>
         /// Valor para as avalições dadas no momento dos comentarios de um perfil 

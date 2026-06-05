@@ -16,15 +16,14 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///<summary>
         ///Autor do Like deixado num anuncio
         /// </summary>
-        [ForeignKey(nameof(LikeAutor))]
+        
         public int LikeAutorFK { get; set; }
-
-
 
         ///<summary>
         ///Objeto do tipo MyUser para o autor do like
         ///</summary>
-         [ValidateNever]
+        [ValidateNever]
+        [ForeignKey(nameof(LikeAutorFK))]
         public MyUser LikeAutor { get; set; } = null!;
 
 
@@ -39,6 +38,7 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///Objeto do tipo Post/Anuncio
         ///</summary>
         [ValidateNever]
+        
         public Post LikedPost { get; set; } = null!;
 
     }

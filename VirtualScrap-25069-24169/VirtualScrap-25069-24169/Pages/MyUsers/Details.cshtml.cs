@@ -30,11 +30,12 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 return NotFound();
             }
 
-            
+
             MyUser = await _context.MyUsers
                 .Include(u => u.ReceivedComments)
                     .ThenInclude(e => e.Autor)
                 .FirstOrDefaultAsync(m => m.Id == id);
+                
 
             if (MyUser == null)
             {
@@ -51,16 +52,41 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             {
                 return NotFound();
             }
-            var userLoggado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             MyUser = await _context.MyUsers
-                .Include(u => u.ReceivedComments)
-                    .ThenInclude(e => e.Autor) // Garante que aqui bate certo com o nome da propriedade (Autor ou Author)
-                .FirstOrDefaultAsync(m => m.Id == id);
+           .Include(u => u.ReceivedComments)
+               .ThenInclude(e => e.Autor)
+           .FirstOrDefaultAsync(m => m.Id == id);
 
             if (MyUser == null)
             {
                 return NotFound();
             }
+
+
+
+
+            var userGUID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userGUID))
+            {
+                ModelState.AddModelError(string.Empty, "Precisas de ter a sessão iniciada.");
+                return Page();
+            }
+
+            var myUserCommentator = await _context.MyUsers
+                .FirstOrDefaultAsync(u => u.IdUser == userGUID);
+
+            if(myUserCommentator == null)
+            {
+                ModelState.AddModelError(string.Empty, "Não existe este utilizador");
+                return Page();
+            }
+
+
+            int myUserId = myUserCommentator.Id;
+
+            
 
             if (!ModelState.IsValid)
             {
@@ -70,10 +96,9 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             try
             {
                 
-
                 Comment.CommentDate = DateTime.Now;
                 Comment.RecipientFK = id.Value;
-                Comment.AutorFK = int.Parse(userLoggado);
+                Comment.AutorFK = myUserId;
 
                 _context.Comments.Add(Comment);
                 await _context.SaveChangesAsync();

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
 
@@ -29,16 +30,27 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 return NotFound();
             }
 
-            var myuser = await _context.MyUsers.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (myuser is not null)
+            //Carrega o Utilizador da base de dados 
+            MyUser = await _context.MyUsers
+                //Incluir a lista de posts que esse utilizador tem
+                .Include(p => p.PostsList)
+                .FirstOrDefaultAsync(m => m.Id == id);
+                   
+               
+             
+            //Se for nulo retorna erro
+            if(MyUser == null)
             {
-                MyUser = myuser;
-
-                return Page();
+                return NotFound();
             }
 
-            return NotFound();
+            MyUser.PostsList = await _context.Posts
+                .Where(p => p.OwnerFK == MyUser.Id)
+                .ToListAsync();
+
+
+            return Page();
+           
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
@@ -48,10 +60,23 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 return NotFound();
             }
 
+
+
+            //Vai á base de dados buscar um utilizador com o mesmo id
             var myuser = await _context.MyUsers.FindAsync(id);
+                
+            //Se o utilizador não for nulo vai proceder para a elimação do mesmo
             if (myuser != null)
             {
+                var likesDone = await _context.Likes.Where(l => l.LikeAutorFK == id).ToListAsync();
+                _context.Likes.RemoveRange(likesDone);
+
+                var sentReviews = await _context.Comments.Where(r => r.AutorFK == id).ToListAsync();
+                foreach(var r in sentReviews) { r.AutorFK = null;}
                 MyUser = myuser;
+
+                
+
                 _context.MyUsers.Remove(MyUser);
                 await _context.SaveChangesAsync();
             }

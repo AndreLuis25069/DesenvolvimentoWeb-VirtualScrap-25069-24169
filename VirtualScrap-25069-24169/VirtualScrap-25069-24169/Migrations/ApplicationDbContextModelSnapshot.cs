@@ -249,7 +249,7 @@ namespace VirtualScrap_25069_24169.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AutorFK")
+                    b.Property<int?>("AutorFK")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CommentDate")
@@ -397,7 +397,7 @@ namespace VirtualScrap_25069_24169.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AutorFK")
+                    b.Property<int?>("AutorFK")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CommentDate")
@@ -477,13 +477,12 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "Autor")
                         .WithMany("SentComments")
                         .HasForeignKey("AutorFK")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "Recipient")
                         .WithMany("ReceivedComments")
                         .HasForeignKey("RecipientFK")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Autor");
@@ -496,13 +495,13 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "LikeAutor")
                         .WithMany("LikesList")
                         .HasForeignKey("LikeAutorFK")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", "LikedPost")
                         .WithMany("LikesList")
                         .HasForeignKey("PostFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("LikeAutor");
@@ -525,7 +524,7 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "PostOwner")
                         .WithMany()
                         .HasForeignKey("OwnerFK")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("PostCategory");
@@ -538,13 +537,12 @@ namespace VirtualScrap_25069_24169.Migrations
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.MyUser", "Autor")
                         .WithMany()
                         .HasForeignKey("AutorFK")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("VirtualScrap_25069_24169.Data.Model.Post", "CommentedPost")
                         .WithMany("Commentaries")
                         .HasForeignKey("PostFK")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Autor");

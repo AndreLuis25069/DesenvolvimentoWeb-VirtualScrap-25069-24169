@@ -34,13 +34,13 @@ namespace VirtualScrap_25069_24169.Data.Model
             ///Autor do Comentário/Avaliação deixada num Post
             /// </summary>
             [ForeignKey(nameof(Autor))]
-            public int AutorFK { get; set; }
+            public int? AutorFK { get; set; }
             [ValidateNever]
 
             ///<summary>
             ///Objeto do tipo MyUser para o autor
             ///</summary>
-            public MyUser Autor { get; set; } = null!;
+            public MyUser? Autor { get; set; } = null!;
 
             /// <summary>
             /// Objeto do tipo post para referenciar onde o comentario foi feito

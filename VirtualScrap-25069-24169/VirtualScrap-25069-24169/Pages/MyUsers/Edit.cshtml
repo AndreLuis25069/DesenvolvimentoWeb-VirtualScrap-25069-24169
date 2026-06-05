@@ -2,51 +2,117 @@
 @model VirtualScrap_25069_24169.Pages.MyUsers.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Perfil";
 }
 
-<h1>Edit</h1>
+<div class="container my-4" style="max-width: 800px;">
+    
+    <div class="mb-4">
+        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">
+            ← Voltar à Lista
+        </a>
+    </div>
 
-<h4>MyUser</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="MyUser.Id" />
-            <div class="form-group">
-    <span class="text-danger">*</span>
-                <label asp-for="MyUser.Name" class="control-label"></label>
-                <input asp-for="MyUser.Name" class="form-control" aria-required="true"/>
-                <span asp-validation-for="MyUser.Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MyUser.CellPhone" class="control-label"></label>
-                <input asp-for="MyUser.CellPhone" class="form-control" />
-                <span asp-validation-for="MyUser.CellPhone" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <span class="text-danger">*</span>
-                <label asp-for="MyUser.Photo" class="control-label"></label>
-                <input asp-for="ProfileImage"
-                       type="file"
-                       accept=".jpeg ,.jpg, .png"
-                       class="form-control" />
-                <span asp-validation-for="ProfileImage" class="text-danger"></span>
+    <div class="card border-light shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+            
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm fs-4" style="width: 50px; height: 50px;">
+                    @{
+                        if(Model.MyUser.Photo != null)
+                        {
+                            <img src="~/images1/@Model.MyUser.Photo" class="w-100 h-100 rounded-circle object-fit-cover" alt="@Model.MyUser.Name" asp-append-version="true" />
+                        }
+                        else
+                        {
+                            <span>👨‍🦱</span>
+                        }
+                       
+                    }
+                    
+                </div>
+                <div>
+                    <span class="badge bg-dark text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                        Gestão de Conta
+                    </span>
+                    <h1 class="h3 text-dark fw-bold mb-0">Editar Perfil</h1>
+                </div>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <hr class="text-muted opacity-25 mb-4" />
+
+            <form method="post" enctype="multipart/form-data">
+                
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                
+                <input type="hidden" asp-for="MyUser.Id" />
+
+                <div class="row g-4">
+                    
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="MyUser.Name" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                NOME COMPLETO <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">👤</span>
+                                <input asp-for="MyUser.Name" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" aria-required="true" />
+                            </div>
+                            <span asp-validation-for="MyUser.Name" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label asp-for="MyUser.CellPhone" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                CONTACTO TELEFÓNICO
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">📞</span>
+                                <input asp-for="MyUser.CellPhone" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" placeholder="Ex: 912345678" />
+                            </div>
+                            <span asp-validation-for="MyUser.CellPhone" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label asp-for="MyUser.Photo" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                FOTO DE PERFIL <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">🖼️</span>
+                                <input asp-for="ProfileImage"
+                                       type="file"
+                                       accept=".jpeg, .jpg, .png"
+                                       class="form-control bg-white border-0 py-2"
+                                       style="font-size: 0.9rem;" />
+                            </div>
+                            <span asp-validation-for="ProfileImage" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="text-muted opacity-25 my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-page="./Index" class="btn btn-sm btn-light px-3 fw-medium rounded-pill">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-dark px-4 fw-medium rounded-pill shadow-sm">
+                        💾 Gravar Alterações
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
