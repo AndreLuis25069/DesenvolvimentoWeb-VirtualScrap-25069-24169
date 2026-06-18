@@ -84,31 +84,42 @@
                         💬 Comentários
                     </h6>
 
-                    <form method="post" class="d-flex gap-2 align-items-start">
-                        <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center flex-shrink-0"
-                             style="width: 35px; height: 35px; font-size: 0.8rem; font-weight: 500;">
-                            U
-                        </div>
 
-                        <div class="w-100 position-relative">
-                            <textarea 
-                                      asp-for="Post.Commentaries"
-                                      class="form-control bg-light border-0 pr-5"
-                                      rows="1"
-                                      placeholder="Escreve um comentário..."
-                                      style="font-size: 0.85rem; resize: none; border-radius: 20px; padding-left: 15px; padding-right: 45px; min-height: 38px; py: 2;"
-                                      oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
-                            <input class="form-control" aria-required="true" />
-                            <span asp-validation-for="Post.Commentaries" class="text-danger"></span>
-                            <button type="submit"
-                                    class="btn btn-dark rounded-circle position-absolute d-flex align-items-center justify-content-center shadow-sm"
-                                    style="right: 5px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; padding: 0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-send-fill text-white" viewBox="0 0 16 16">
-                                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
-                                </svg>
-                            </button>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form method="post" asp-page="./Details" asp-route-id="@Model.Post.Id" class="d-flex gap-2 align-items-start mb-3">
+                            <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center flex-shrink-0"
+                                 style="width: 35px; height: 35px; font-size: 0.8rem; font-weight: 500;">
+                                U
+                            </div>
+
+                            <div class="w-100 position-relative">
+                                <textarea asp-for="NovoComentarioTexto"
+                                          class="form-control bg-light border-0 pr-5"
+                                          rows="1"
+                                          placeholder="Escreve um comentário..."
+                                          style="font-size: 0.85rem; resize: none; border-radius: 20px; padding-left: 15px; padding-right: 45px; min-height: 38px; py: 2;"
+                                          oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+
+                                <span asp-validation-for="NovoComentarioTexto" class="text-danger small d-block mt-1"></span>
+
+                                <button type="submit"
+                                        class="btn btn-dark rounded-circle position-absolute d-flex align-items-center justify-content-center shadow-sm"
+                                        style="right: 5px; top: 19px; transform: translateY(-50%); width: 28px; height: 28px; padding: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-send-fill text-white" viewBox="0 0 16 16">
+                                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    }
+
+                    else
+                    {
+                        <div class="alert alert-secondary py-2 text-center small mb-3">
+                            Para comentar, <a asp-area="Identity" asp-page="/Account/Login" class="fw-bold text-dark">faz login aqui</a>.
                         </div>
-                    </form>
+                    }
                     <div class="comments-list d-flex flex-column gap-3">
                         @if (Model.Post.Commentaries != null && Model.Post.Commentaries.Any())
                         {
