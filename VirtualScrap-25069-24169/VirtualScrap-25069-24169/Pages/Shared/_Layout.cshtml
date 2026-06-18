@@ -63,6 +63,11 @@
                             <a class="btn btn-link text-light text-decoration-none px-3" asp-area="Identity" asp-page="/Account/Login">
                                 🧑 @userName
                             </a>
+
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                                <button type="submit" class="nav-link btn btn-link text-light bg-danger p-1">Logout</button>
+                            </form>
+
                             }
 
                     }
