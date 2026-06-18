@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,11 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     public class DeleteModel : PageModel
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
-
-        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context)
+        private readonly UserManager<MyUser> _userManager;
+        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, UserManager<MyUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [BindProperty]
@@ -68,17 +70,25 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             //Se o utilizador não for nulo vai proceder para a elimação do mesmo
             if (myuser != null)
             {
+
+                //Remover todos os likes efetuados pelo utilizador
                 var likesDone = await _context.Likes.Where(l => l.LikeAutorFK == id).ToListAsync();
                 _context.Likes.RemoveRange(likesDone);
 
-                var sentReviews = await _context.Comments.Where(r => r.AutorFK == id).ToListAsync();
-                foreach(var r in sentReviews) { r.AutorFK = null;}
-                MyUser = myuser;
+                //Remover todas as avaliaçoes Recebidas pelo utilizador
+                var receivedRatings = await _context.Comments.Where(r => r.RecipientFK == id).ToListAsync();
+                foreach(var r in receivedRatings) { r.AutorFK = null;}
+                
+                //
+                var postsDone = await _context.Posts.Where(p => p.OwnerFK == id).ToListAsync();
+                _context.Posts.RemoveRange(postsDone);
+                await _context.SaveChangesAsync();
 
+                MyUser = myuser;
+                await _userManager.DeleteAsync(MyUser);
                 
 
-                _context.MyUsers.Remove(MyUser);
-                await _context.SaveChangesAsync();
+              
             }
 
             return RedirectToPage("./Index");
