@@ -19,6 +19,8 @@ namespace VirtualScrap_25069_24169.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<PostComment> PostComments { get; set; }
 
+        
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
