@@ -160,19 +160,37 @@
                             @foreach (var comment in Model.MyUser.ReceivedComments)
                             {
                                 <div class="d-flex gap-2 align-items-start">
-                                    @if (comment.Autor != null && !string.IsNullOrEmpty(comment.Autor.Photo))
+
+                                    @if (comment.AutorFK != null && comment.Autor != null && !string.IsNullOrEmpty(comment.Autor.Photo))
                                     {
                                         <img src="~/images1/@comment.Autor.Photo" alt="Foto" class="rounded-circle object-fit-cover" style="width: 36px; height: 36px;" />
                                     }
                                     else
                                     {
                                         <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.8rem;">
-                                            @(!string.IsNullOrEmpty(comment.Autor?.Name) ? comment.Autor.Name.Substring(0, 1).ToUpper() : "?")
+                                            @if (comment.AutorFK == null)
+                                            {
+                                                <span>X</span>
+                                            }
+                                            else
+                                            {
+                                                @comment.Autor.Name.Substring(0, 1).ToUpper()
+                                            }
                                         </div>
                                     }
+
                                     <div class="bg-light p-3 rounded-3 w-100" style="border-top-left-radius: 0px !important;">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="fw-bold text-dark small">@comment.Autor?.Name</span>
+                                            <span class="fw-bold text-dark small">
+                                                @if (comment.AutorFK == null)
+                                                {
+                                                    <span class="text-muted fst-italic">Utilizador Removido</span>
+                                                }
+                                                else
+                                                {
+                                                    @comment.Autor.Name
+                                                }
+                                            </span>
                                             <span class="text-muted" style="font-size: 0.65rem;">📅 @comment.CommentDate.ToString("dd/MM/yyyy HH:mm")</span>
                                         </div>
                                         <div class="text-warning mb-1" style="font-size: 0.75rem;">@string.Concat(Enumerable.Repeat("⭐", comment.Rating))</div>
@@ -183,7 +201,9 @@
                         }
                         else
                         {
-                            <div class="text-center py-4 text-muted bg-light rounded-3"><span class="d-block small">⭐ Este utilizador ainda não tem feedback.</span></div>
+                            <div class="text-center py-4 text-muted bg-light rounded-3">
+                                <span class="d-block small">⭐ Este utilizador ainda não tem feedback.</span>
+                            </div>
                         }
                     </div>
                 </div>
