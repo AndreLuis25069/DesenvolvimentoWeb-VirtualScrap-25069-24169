@@ -1,4 +1,6 @@
-﻿@using System.Security.Claims
+﻿@inject VirtualScrap_25069_24169.Data.ApplicationDbContext _context
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -59,10 +61,17 @@
                             }
                             else
                             {
-                                var userName = User.Identity?.Name;
-                            <a class="btn btn-link text-light text-decoration-none px-3" asp-area="Identity" asp-page="/Account/Login">
-                                🧑 @userName
-                            </a>
+                                // Procura o registo na tua tabela correspondente ao utilizador logado
+                                var dadosDoPerfil = _context.MyUsers.FirstOrDefault(u => u.IdUser == loginGUID);
+
+                                // Se encontrar usa o nome da tabela, caso contrário usa o Name antigo por segurança
+                                var nome = dadosDoPerfil != null ? dadosDoPerfil.Name : User.Identity?.Name;
+
+                                // Se não encontrar o perfil na base de dados, o ID da rota passa a 0 para não causar erro
+                                var idDoPerfil = dadosDoPerfil != null ? dadosDoPerfil.Id : 0;
+                                <a class="btn btn-link text-light text-decoration-none px-3" asp-area="" asp-page="/MyUsers/Details" asp-route-id="@idDoPerfil">
+                                🧑 @nome
+                                </a>
 
                             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
                                 <button type="submit" class="nav-link btn btn-link text-light bg-danger p-1">Logout</button>
