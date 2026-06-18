@@ -34,6 +34,9 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             MyUser = await _context.MyUsers
                 .Include(u => u.ReceivedComments)
                     .ThenInclude(e => e.Autor)
+                .Include(u => u.LikesList)            
+                    .ThenInclude(l => l.LikedPost)    
+                    .ThenInclude(p => p.PostCategory)
                 .FirstOrDefaultAsync(m => m.Id == id);
                 
 
