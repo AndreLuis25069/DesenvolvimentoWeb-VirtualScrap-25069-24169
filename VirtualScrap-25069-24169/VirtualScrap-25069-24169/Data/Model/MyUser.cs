@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace VirtualScrap_25069_24169.Data.Model
 {
-    public class MyUser
+    public class MyUser 
     {
         [Key] //Primary Key
         public int Id { get; set; }
