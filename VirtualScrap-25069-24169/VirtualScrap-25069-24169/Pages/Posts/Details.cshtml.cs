@@ -30,6 +30,9 @@ namespace VirtualScrap_25069_24169.Pages.Posts
         [StringLength(500)]
         public string NovoComentarioTexto { get; set; } = "";
 
+        // Propriedade para controlar o estado do botão no Front-end
+        public bool JaTemLike { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -43,13 +46,71 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                     .ThenInclude(c => c.Autor)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (post is not null)
+            if (post is null)
             {
-                Post = post;
-                return Page();
+                
+                return NotFound();
             }
 
-            return NotFound();
+            Post = post;
+
+            // Verificar se o utilizador logado já deu like neste post
+            if (User.Identity.IsAuthenticated)
+            {
+                var identityUserId = _userManager.GetUserId(User);
+                var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUserId);
+
+                if (myUser != null)
+                {
+                    // Vê se existe algum registo na tabela Like com o ID do user e do Post
+                    JaTemLike = await _context.Set<Like>()
+                        .AnyAsync(l => l.LikeAutorFK == myUser.Id && l.PostFK == post.Id);
+                }
+            }
+
+            return Page();
+        }
+
+        // HANDLER PARA ADICIONAR / REMOVER LIKE
+        public async Task<IActionResult> OnPostLikeAsync(int id)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Challenge();
+            }
+
+            var identityUserId = _userManager.GetUserId(User);
+            var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUserId);
+
+            if (myUser == null)
+            {
+                return Challenge();
+            }
+
+            // Procura se o Like já existe
+            var likeExistente = await _context.Set<Like>()
+                .FirstOrDefaultAsync(l => l.LikeAutorFK == myUser.Id && l.PostFK == id);
+
+            if (likeExistente != null)
+            {
+                // Se já existe, o utilizador clicou para retirar o Like (Remove)
+                _context.Set<Like>().Remove(likeExistente);
+            }
+            else
+            {
+                // Se não existe, cria um novo registo (Add)
+                var novoLike = new Like
+                {
+                    LikeAutorFK = myUser.Id,
+                    PostFK = id
+                };
+                _context.Set<Like>().Add(novoLike);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Faz refresh à página de detalhes do post
+            return RedirectToPage(new { id = id });
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
