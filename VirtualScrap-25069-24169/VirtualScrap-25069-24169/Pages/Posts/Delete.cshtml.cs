@@ -1,22 +1,28 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
+using Microsoft.AspNetCore.Identity;
 
 namespace VirtualScrap_25069_24169.Pages.Posts
 {
+    [Authorize]
     public class DeleteModel : PageModel
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context)
+        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [BindProperty]
@@ -29,7 +35,17 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                 return NotFound();
             }
 
-            var post = await _context.Posts.FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _context.Posts
+                        .Include(p => p.PostOwner)
+                        .FirstOrDefaultAsync(m => m.Id == id);
+
+            var userIdLogado = _userManager.GetUserId(User);
+
+            //Verifica se o utilizador logado é o dono do post ou se o dono do post existe ou se quem está a tentar aceder está logado
+            if (!User.Identity.IsAuthenticated || post.PostOwner == null || post.PostOwner.IdUser != userIdLogado)
+            {
+                return RedirectToPage("./Index");
+            }
 
             if (post is not null)
             {
@@ -48,13 +64,29 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                 return NotFound();
             }
 
-            var post = await _context.Posts.FindAsync(id);
-            if (post != null)
+            var post = await _context.Posts
+                            .Include(p => p.PostOwner)
+                            .FirstOrDefaultAsync(m => m.Id == id);
+
+            // Se o post já não existir, redireciona ou dá NotFound
+            if (post == null)
             {
-                Post = post;
-                _context.Posts.Remove(Post);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
+
+            //Vai buscar o ID do utilizador que está logado a tentar apagar
+            var userIdLogado = _userManager.GetUserId(User);
+
+            //Se não for o dono real, redireciona para fora e não apaga nada!
+            if (!User.Identity.IsAuthenticated || post.PostOwner == null || post.PostOwner.IdUser != userIdLogado)
+            {
+                return RedirectToPage("./Index");
+            }
+
+            //Se passou na validação, então sim, remove-se da base de dados
+            Post = post;
+            _context.Posts.Remove(Post);
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
