@@ -86,7 +86,7 @@ using (var scope = app.Services.CreateScope())
         
     }
 
-    if (user != null && !await userManager.IsInRoleAsync(user2, "Admin"))
+    if (user2 != null && !await userManager.IsInRoleAsync(user2, "Admin"))
     {
         await userManager.AddToRoleAsync(user2, "Admin");
     }

@@ -199,10 +199,39 @@
                                             <span class="text-muted" style="font-size: 0.65rem;">
                                                 🕒 @comentario.CommentDate.ToString("dd/MM/yyyy HH:mm")
                                             </span>
+
+                                            @if (comentario.AutorFK != null && (Model.MyUserIdLogado == comentario.AutorFK || User.IsInRole("Admin")))
+                                            {
+                                                <div class="d-flex gap-1">
+
+          
+                                                    <button type="button" onclick="ativarEdicao(@comentario.Id)" class="text-primary p-0 border-0 bg-transparent" style="font-size: 0.75rem;" title="Editar">
+                                                        ✏️
+                                                    </button>
+
+                                                    
+                                                    <form method="post" asp-page-handler="DeleteComentario" asp-route-id="@Model.Post.Id" asp-route-comentarioId="@comentario.Id" onsubmit="return confirm('Tens a certeza que queres eliminar este comentário?');">
+                                                        <button type="submit" class="text-danger p-0 border-0 bg-transparent" style="font-size: 0.75rem;" title="Eliminar">
+                                                            ❌
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            }
                                         </div>
-                                        <p class="text-secondary m-0" style="font-size: 0.8rem; white-space: pre-line;">
+                                        <p id="texto-@comentario.Id" class="text-secondary m-0" style="font-size: 0.8rem; white-space: pre-line;">
                                             @comentario.Description
                                         </p>
+
+                                        @if (comentario.AutorFK != null && (Model.MyUserIdLogado == comentario.AutorFK || User.IsInRole("Admin")))
+                                        {
+                                            <form id="form-edit-@comentario.Id" method="post" asp-page-handler="EditComentario" asp-route-id="@Model.Post.Id" asp-route-comentarioId="@comentario.Id" class="d-none mt-2">
+                                                <div class="input-group input-group-sm">
+                                                    <input type="text" name="TextoEditado" class="form-control form-control-sm" value="@comentario.Description" required />
+                                                    <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                                                    <button type="button" onclick="cancelarEdicao(@comentario.Id)" class="btn btn-secondary btn-sm">Cancelar</button>
+                                                </div>
+                                            </form>
+                                        }
                                     </div>
                                 </div>
                             }
@@ -220,3 +249,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    function ativarEdicao(id) {
+        document.getElementById('texto-' + id).classList.add('d-none');
+        document.getElementById('form-edit-' + id).classList.remove('d-none');
+    }
+
+    function cancelarEdicao(id) {
+        document.getElementById('texto-' + id).classList.remove('d-none');
+        document.getElementById('form-edit-' + id).classList.add('d-none');
+    }
+</script>
