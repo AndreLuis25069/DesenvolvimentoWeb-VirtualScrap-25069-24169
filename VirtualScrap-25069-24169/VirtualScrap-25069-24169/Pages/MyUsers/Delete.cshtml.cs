@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,12 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     public class DeleteModel : PageModel
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
-        private readonly SignInManager<MyUser> _signInManager;
+        
 
-        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, SignInManager<MyUser> signInManager)
+        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context)
         {
             _context = context;
-            _signInManager = signInManager;
+            
         }
 
         [BindProperty]
@@ -127,7 +128,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
 
                 if (deletingLoggedUser)
                 {
-                    await _signInManager.SignOutAsync();
+                    await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
                     return RedirectToPage("/Index");
                 }
             }
