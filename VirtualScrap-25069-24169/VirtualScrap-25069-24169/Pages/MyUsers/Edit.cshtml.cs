@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace VirtualScrap_25069_24169.Pages.MyUsers
 {
@@ -15,11 +18,13 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public EditModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public EditModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
         }
 
         [BindProperty]
@@ -42,6 +47,16 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 return NotFound();
             }
             MyUser = myuser;
+
+            // --- VALIDAÇÃO DE SEGURANÇA NO GET ---
+            var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!isAdmin && MyUser.IdUser != userIdLogado)
+            {
+                return RedirectToPage("/Index");
+            }
+
             HttpContext.Session.SetInt32("MyUserId", MyUser.Id);
             return Page();
         }
@@ -64,7 +79,22 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             //Se o objeto que vem do formulario tiver o id diferente do do cookie volta para tras e não altera nada
             if (idUserCookie != MyUser.Id)
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("/Index");
+            }
+
+            // --- VALIDAÇÃO DE SEGURANÇA NO POST ---
+            var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+
+            // Vai buscar o IdUser real que está guardado na base de dados para este perfil
+            var idUserRealNaBD = await _context.MyUsers
+                .Where(u => u.Id == MyUser.Id)
+                .Select(u => u.IdUser)
+                .FirstOrDefaultAsync();
+
+            if (!isAdmin && idUserRealNaBD != userIdLogado)
+            {
+                return RedirectToPage("/Index"); // Bloqueio total se os IDs não baterem certo
             }
 
 

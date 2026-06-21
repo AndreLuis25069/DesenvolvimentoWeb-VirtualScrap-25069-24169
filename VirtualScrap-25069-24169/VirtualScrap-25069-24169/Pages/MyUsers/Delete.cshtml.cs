@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VirtualScrap_25069_24169.Pages.MyUsers
 {
@@ -40,11 +42,11 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             MyUser = await _context.MyUsers
             .Include(p => p.PostsList)
             .FirstOrDefaultAsync(m => m.Id == id);
-                   
-               
-             
+
+
+
             //Se for nulo retorna erro
-            if(MyUser == null)
+            if (MyUser == null)
             {
                 return NotFound();
             }
@@ -53,9 +55,17 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 .Where(p => p.OwnerFK == MyUser.Id)
                 .ToListAsync();
 
+            // --- VALIDAÇÃO DE SEGURANÇA NO GET ---
+            var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!isAdmin && MyUser.IdUser != userIdLogado)
+            {
+                return RedirectToPage("/Index");
+            }
 
             return Page();
-           
+
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
@@ -66,10 +76,25 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             }
 
 
+            // --- VALIDAÇÃO DE SEGURANÇA NO POST ---
+            var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+
+            // Vai buscar o IdUser real que está guardado na base de dados para este perfil
+            var idUserRealNaBD = await _context.MyUsers
+                .Where(u => u.Id == MyUser.Id)
+                .Select(u => u.IdUser)
+                .FirstOrDefaultAsync();
+
+            if (!isAdmin && idUserRealNaBD != userIdLogado)
+            {
+                return RedirectToPage("/Index"); // Bloqueio total se os IDs não baterem certo
+            }
+
 
             //Vai á base de dados buscar um utilizador com o mesmo id
             var myuser = await _context.MyUsers.FindAsync(id);
-                
+
             //Se o utilizador não for nulo vai proceder para a elimação do mesmo
             if (myuser != null)
             {
@@ -77,7 +102,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
 
                 //Remover comentarios feitos em posts 
                 var postComments = await _context.PostComments.Where(c => c.AutorFK == id).ToListAsync();
-                foreach(var postComment in postComments)
+                foreach (var postComment in postComments)
                 {
                     postComment.AutorFK = null;
                 }
@@ -96,10 +121,10 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 _context.Posts.RemoveRange(postsDone);
                 await _context.SaveChangesAsync();
 
-                
+
                 //Manter os comentarios feitos mas remover a chave forasteira para que não exista problemas no momento de eliminar os utilizadores
                 var sentComments = await _context.Comments.Where(s => s.AutorFK == id).ToListAsync();
-                foreach(var comment in sentComments)
+                foreach (var comment in sentComments)
                 {
                     //Aqui atribuimos o valor nulo ao campo da chave do autor
                     comment.AutorFK = null;
@@ -137,3 +162,4 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
         }
     }
 }
+
