@@ -1,10 +1,17 @@
 ﻿@page
 @model VirtualScrap_25069_24169.Pages.MyUsers.DeleteModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Eliminar Utilizador";
+    //Verifica se o perfil pertence ao utilizador logado
+    var OProprioPerfil = User.Identity.IsAuthenticated &&
+    Model.MyUser.IdUser == UserManager.GetUserId(User);
 }
 
+@if (OProprioPerfil || User.IsInRole("Admin"))
+{
 <div class="container my-4" style="max-width: 800px;">
     
     <div class="mb-4">
@@ -113,3 +120,9 @@
         </div>
     </div>
 </div>
+}
+
+else
+{
+    Response.Redirect("/");
+}
