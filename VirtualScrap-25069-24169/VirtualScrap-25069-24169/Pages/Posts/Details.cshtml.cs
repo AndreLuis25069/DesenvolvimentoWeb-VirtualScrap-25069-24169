@@ -25,7 +25,9 @@ namespace VirtualScrap_25069_24169.Pages.Posts
 
         public Post Post { get; set; } = default!;
 
-        
+        public int MyUserIdLogado { get; set; }
+
+
         //Propriedade para capturar o texto do formulário
         [BindProperty]
         [Required(ErrorMessage = "O comentário não pode estar vazio.")]
@@ -67,10 +69,86 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                     // Vê se existe algum registo na tabela Like com o ID do user e do Post
                     JaTemLike = await _context.Set<Like>()
                         .AnyAsync(l => l.LikeAutorFK == myUser.Id && l.PostFK == post.Id);
+
+                    MyUserIdLogado = myUser.Id;
                 }
-            }
+            } 
 
             return Page();
+        }
+
+        // HANDLER PARA EDITAR O COMENTÁRIO
+        public async Task<IActionResult> OnPostEditComentarioAsync(int id, int comentarioId, string TextoEditado)
+        {
+
+            //ModelState.Clear(); //Remove qualquer erro de validacao que tenha encontrado antes
+
+            if (!User.Identity.IsAuthenticated) return Challenge();
+
+            if (string.IsNullOrWhiteSpace(TextoEditado))
+            {
+                return RedirectToPage(new { id = id });
+            }
+
+            var comentario = await _context.PostComments.FindAsync(comentarioId);
+            if (comentario == null) return NotFound();
+
+            var identityUserId = _userManager.GetUserId(User);
+            var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUserId);
+            if (myUser == null) return Challenge();
+
+            // Segurança: Dono ou Admin
+            if (!User.IsInRole("Admin") && comentario.AutorFK != myUser.Id)
+            {
+                return RedirectToPage(new { id = id });
+            }
+
+            // Atualiza o texto e a BD
+            comentario.Description = TextoEditado;
+            _context.Attach(comentario).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage(new { id = id });
+        }
+
+        // HANDLER PARA ELIMINAR UM COMENTÁRIO
+        public async Task<IActionResult> OnPostDeleteComentarioAsync(int id, int comentarioId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Challenge();
+            }
+
+            // Procurar o comentário na BD
+            var comentario = await _context.PostComments.FindAsync(comentarioId);
+            if (comentario == null)
+            {
+                return NotFound();
+            }
+
+            // Ir buscar o utilizador logado para validar a segurança
+            var identityUserId = _userManager.GetUserId(User);
+            var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUserId);
+
+            if (myUser == null)
+            {
+                return Challenge();
+            }
+
+            var isAdmin = User.IsInRole("Admin");
+
+            // SEGURANÇA TOTAL: Só apaga se for Admin OU se for o verdadeiro dono do comentário
+            if (!isAdmin && comentario.AutorFK != myUser.Id)
+            {
+                return RedirectToPage(new { id = id }); // Se for alguém a tentar injetar IDs, dá refresh sem fazer nada
+            }
+
+            // Remover e guardar
+            _context.PostComments.Remove(comentario);
+            await _context.SaveChangesAsync();
+
+            // Faz refresh à própria página de detalhes
+            return RedirectToPage(new { id = id });
         }
 
         // HANDLER PARA ADICIONAR / REMOVER LIKE
