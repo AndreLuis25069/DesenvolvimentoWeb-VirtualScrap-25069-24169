@@ -19,12 +19,12 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     public class DeleteModel : PageModel
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
-
+        
 
         public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context)
         {
             _context = context;
-
+            
         }
 
         [BindProperty]

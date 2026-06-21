@@ -76,13 +76,20 @@ using (var scope = app.Services.CreateScope())
 
     // 2. Dar a role Admin a um utilizador já existente
     var emailAdmin = "testarogajovirtual@gmail.com";
+    var emailAdmin2 = "andralluis2000@gmail.com";
     var user = await userManager.FindByEmailAsync(emailAdmin);
+    var user2 = await userManager.FindByEmailAsync(emailAdmin2);
 
     if (user != null && !await userManager.IsInRoleAsync(user, "Admin"))
     {
         await userManager.AddToRoleAsync(user, "Admin");
+        
     }
 
+    if (user != null && !await userManager.IsInRoleAsync(user2, "Admin"))
+    {
+        await userManager.AddToRoleAsync(user2, "Admin");
+    }
 
 
 }
