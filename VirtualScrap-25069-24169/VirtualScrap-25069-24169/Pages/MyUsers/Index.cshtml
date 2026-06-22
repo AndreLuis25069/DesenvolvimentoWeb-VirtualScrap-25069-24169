@@ -1,48 +1,96 @@
 ﻿@page
+@using Microsoft.AspNetCore.Identity
 @model VirtualScrap_25069_24169.Pages.MyUsers.IndexModel
+@inject Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Utilizadores";
 }
 
-<h1>Index</h1>
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-dark fw-bold mb-1">👤 Gestão de Utilizadores</h1>
+            <p class="text-muted small mb-0">Administra as permissões e perfis de acesso do sistema.</p>
+        </div>
+        <a asp-page="Create" class="btn btn-dark btn-sm rounded-pill px-3">
+            ➕ Criar Novo Perfil
+        </a>
+    </div>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.MyUser[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MyUser[0].CellPhone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MyUser[0].IdUser)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.MyUser) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CellPhone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdUser)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="card shadow-sm border-light">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                <thead class="table-light text-secondary small text-uppercase">
+                    <tr>
+                        <th class="ps-4">@Html.DisplayNameFor(model => model.MyUser[0].Name)</th>
+                        <th>@Html.DisplayNameFor(model => model.MyUser[0].CellPhone)</th>
+                        <th>Estatuto / Cargo</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.MyUser)
+                    {
+                        var isAdmin = await UserManager.IsInRoleAsync(new IdentityUser { Id = item.IdUser }, "Admin");
+
+                        <tr>
+                            <td class="fw-bold text-dark ps-4">
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td class="text-secondary">
+                                @(string.IsNullOrEmpty(item.CellPhone) ? "—" : item.CellPhone)
+                            </td>
+                            <td>
+                                @if (isAdmin)
+                                {
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1.5 rounded-pill uppercase fw-bold" style="font-size: 0.7rem;">
+                                        ⚙️ Admin
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-secondary border px-2.5 py-1.5 rounded-pill uppercase fw-bold" style="font-size: 0.7rem;">
+                                        👤 Utilizador
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-inline-flex gap-2 align-items-center">
+
+                                    @if (item.IdUser != null)
+                                    {
+                                        @if (isAdmin)
+                                        {
+                                            <form method="post" asp-page-handler="RetirarAdmin" asp-route-idUser="@item.IdUser" onsubmit="return confirm('Tens a certeza que queres despromover este Administrador?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem; border-radius: 6px;">
+                                                    Retirar Admin
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form method="post" asp-page-handler="TornarAdmin" asp-route-idUser="@item.IdUser" onsubmit="return confirm('Queres mesmo dar permissões totais de Admin a este utilizador?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-success py-1 px-2.5" style="font-size: 0.75rem; border-radius: 6px;">
+                                                    Tornar Admin
+                                                </button>
+                                            </form>
+                                        }
+                                    }
+
+                                    <span class="text-muted opacity-25">|</span>
+
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn text-secondary p-1" title="Editar">✏️</a>
+                                        <a asp-page="./Details" asp-route-id="@item.Id" class="btn text-secondary p-1" title="Detalhes">👁️</a>
+                                        <a asp-page="./Delete" asp-route-id="@item.Id" class="btn text-danger p-1" title="Eliminar">🗑️</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
