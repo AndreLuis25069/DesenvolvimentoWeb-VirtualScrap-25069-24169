@@ -62,36 +62,22 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 
-// Bloco para criar as Roles automaticamente ao iniciar
+
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-    // 1. Criar a role Admin se não existir
-    if (!await roleManager.RoleExistsAsync("Admin"))
+    var services = scope.ServiceProvider;
+    try
     {
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        // Executa o método Initialize que criámos acima de forma assíncrona
+        await VirtualScrap_25069_24169.Data.Seed.DbInitializer.Initialize(context);
     }
-
-    // 2. Dar a role Admin a um utilizador já existente
-    var emailAdmin = "testarogajovirtual@gmail.com";
-    var emailAdmin2 = "andralluis2000@gmail.com";
-    var user = await userManager.FindByEmailAsync(emailAdmin);
-    var user2 = await userManager.FindByEmailAsync(emailAdmin2);
-
-    if (user != null && !await userManager.IsInRoleAsync(user, "Admin"))
+    catch (Exception ex)
     {
-        await userManager.AddToRoleAsync(user, "Admin");
-        
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocorreu um erro ao popular a Base de Dados.");
     }
-
-    if (user2 != null && !await userManager.IsInRoleAsync(user2, "Admin"))
-    {
-        await userManager.AddToRoleAsync(user2, "Admin");
-    }
-
-
 }
+
 
 app.Run();

@@ -19,9 +19,10 @@ namespace VirtualScrap_25069_24169.Data.Model
         ///<summary>
         ///Numero de telefone do Utilizador
         /// </summary>
+        [Required(ErrorMessage = "O {0} é de preenchimento obrigatório.")]
         [Display(Name = "Numero de Telefone do Utilizador")]
         [StringLength(19)]
-        [RegularExpression(@"\+?[0-9]{9,18}", ErrorMessage = "O {0} é de preenchimento obrigatório")]
+        [RegularExpression(@"\+?[0-9]{9,18}", ErrorMessage = "O {0} não respeita o formato desejado ex:914567899.")]
         public string CellPhone { get; set; } = "";
 
 
