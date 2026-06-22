@@ -81,18 +81,21 @@ namespace VirtualScrap_25069_24169.Pages.Posts
         public async Task<IActionResult> OnPostEditComentarioAsync(int id, int comentarioId, string TextoEditado)
         {
 
-            //ModelState.Clear(); //Remove qualquer erro de validacao que tenha encontrado antes
-
+            
+            //Se o utilizador não estiver com sessão iniciada irá ser redirecionado para a página de login
             if (!User.Identity.IsAuthenticated) return Challenge();
-
+            
+            //Garante que o comentário não pode ser vazio, caso seja  removido o required pela linha de consola de forma a aumentar a segurança
             if (string.IsNullOrWhiteSpace(TextoEditado))
             {
                 return RedirectToPage(new { id = id });
             }
 
+            //Vai buscar o comentario com o dado id á base de dados 
             var comentario = await _context.PostComments.FindAsync(comentarioId);
             if (comentario == null) return NotFound();
 
+            //Guardar o Id do utilizador que está com a sessão iniciada 
             var identityUserId = _userManager.GetUserId(User);
             var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUserId);
             if (myUser == null) return Challenge();
