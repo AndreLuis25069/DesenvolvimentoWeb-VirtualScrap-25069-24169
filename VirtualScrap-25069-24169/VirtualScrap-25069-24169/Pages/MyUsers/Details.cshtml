@@ -10,8 +10,8 @@
 
 <div class="container my-4" style="max-width: 800px;">
     <div class="mb-4">
-        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">
-            ← Voltar à Lista
+        <a asp-page="/Index" class="btn btn-sm btn-outline-secondary">
+            ← Voltar 
         </a>
     </div>
 
@@ -227,10 +227,10 @@
                                     @if (isCommentOwner || isAdmin)
                                     {
                                         <div class="collapse" id="editCollapse-@comment.Id">
-                                            <form method="post" asp-page-handler="EditComment" asp-route-commentId="@comment.Id" class="mt-2">
+                                                <form method="post" asp-page-handler="EditComment" asp-route-Id="@Model.MyUser.Id" asp-route-ratingId="@comment.Id" class="mt-2">
 
                                                 <div class="mb-2" style="max-width: 180px;">
-                                                    <select name="UpdatedRating" class="form-select form-select-sm border border-secondary-subtle bg-white shadow-sm" style="border-radius: 8px; font-size: 0.8rem;">
+                                                    <select name="ratingStars" class="form-select form-select-sm border border-secondary-subtle bg-white shadow-sm" style="border-radius: 8px; font-size: 0.8rem;">
                                                         <option value="5" selected="@(comment.Rating == 5)">⭐⭐⭐⭐⭐ (5/5)</option>
                                                         <option value="4" selected="@(comment.Rating == 4)">⭐⭐⭐⭐ (4/5)</option>
                                                         <option value="3" selected="@(comment.Rating == 3)">⭐⭐⭐ (3/5)</option>
@@ -239,7 +239,7 @@
                                                     </select>
                                                 </div>
 
-                                                <textarea name="UpdatedDescription" class="form-control form-control-sm mb-2" rows="2" style="font-size: 0.85rem; border-radius: 8px; resize:none;" required>@comment.Description</textarea>
+                                                <textarea name="ratingText" class="form-control form-control-sm mb-2" rows="2" style="font-size: 0.85rem; border-radius: 8px; resize:none;" required>@comment.Description</textarea>
 
                                                 <div class="d-flex gap-2 justify-content-end align-items-center mt-2">
 
@@ -273,7 +273,7 @@
                                             <h6 class="fw-bold text-dark mt-2">Remover Comentário</h6>
                                             <p class="text-muted small mb-4">Deseja mesmo remover o comentário?</p>
 
-                                            <form method="post" asp-page-handler="DeleteComment" asp-route-commentId="@comment.Id">
+                                                <form method="post" asp-page-handler="DeleteComment" asp-route-Id="@Model.MyUser.Id" asp-route-ratingId="@comment.Id">
                                                 <div class="d-flex gap-2 justify-content-center">
                                                     <button type="button" class="btn btn-light w-50 border" data-bs-dismiss="modal" style="font-size: 0.85rem; border-radius: 10px;">Não</button>
                                                     <button type="submit" class="btn btn-danger w-50" style="font-size: 0.85rem; border-radius: 10px;">Sim, remover</button>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,10 +12,11 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     public class DetailsModel : PageModel
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
-
-        public DetailsModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context)
+        private readonly UserManager<IdentityUser> _userManager;
+        public DetailsModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public MyUser MyUser { get; set; } = default!;
@@ -46,9 +48,77 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             }
 
             return Page();
-        } 
+        }
 
-        
+        public async Task<IActionResult> OnPostEditCommentAsync(int Id, int ratingId, string ratingText, int ratingStars)
+        {
+            //Se for um utilizador não autenticado é redirecionado para a página do login
+            if (!User.Identity.IsAuthenticated)
+                return Challenge();
+
+            //Verificação para quando alguém  tenta remover o required pela consola o comentário nao ser aceite em branco
+            if (string.IsNullOrWhiteSpace(ratingText))
+            {
+                return RedirectToPage(new { id = Id });
+            }
+
+            //Ir buscar o comentario/avaliação á base de dados
+            var rating = await _context.Comments.FindAsync(ratingId);
+            if (rating == null) return NotFound();
+
+            //Ir buscar o id do utilizador que tem sessão iniciada
+            var loggedUserId = _userManager.GetUserId(User);
+            var userInMyUsers = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == loggedUserId);
+
+            if (userInMyUsers == null) return Challenge();
+
+
+            // Verificar se é dono ou admin 
+            if (!User.IsInRole("Admin") && rating.AutorFK != userInMyUsers.Id)
+            {
+                return RedirectToPage(new { id = Id });
+            }
+
+            rating.Description = ratingText;
+            rating.Rating = ratingStars;
+            _context.Attach(rating).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage(new { id = Id });
+        }
+
+
+        //Função para eliminar comentarios dada a escolha do utilizador Admin ou Dono do próprio comentário 
+        public async Task<IActionResult> OnPostDeleteCommentAsync(int? Id, int ratingId) {
+            //Verificar se o utilizador está com sessão iniciada, caso contrário é redirecionado para a página de Login
+            if (!User.Identity.IsAuthenticated)
+                return Challenge();
+
+            //Ir buscar o comentario/avaliação á base de dados
+            var rating = await _context.Comments.FindAsync(ratingId);
+            if (rating == null) return NotFound();
+
+            //Ir buscar o id do utilizador que tem sessão iniciada
+            var loggedUserId = _userManager.GetUserId(User);
+            var userInMyUsers = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == loggedUserId);
+
+            //Se o utilizador não existir na base de dados é redirecionado para a página de login.
+            if (userInMyUsers == null) return Challenge();
+
+            //Se o utilizador não tiver o role de Administrador ou for o autor do mesmo comentário a página é recarregada e a edição não tem valor
+            //Isto serve para reforçar a segurança em caso de contornos pela consola
+            if(!User.IsInRole("Admin") && rating.AutorFK != userInMyUsers.Id)
+            {
+                return RedirectToPage(new { id = Id });
+            }
+
+
+            //Proceder á eliminação do comentário
+            _context.Comments.Remove(rating);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage(new { id = Id });
+        }
         public async Task<IActionResult> OnPostAsync(int? id)
         {
             if (id == null)
