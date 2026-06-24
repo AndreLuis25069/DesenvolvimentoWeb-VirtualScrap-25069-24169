@@ -26,7 +26,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
         public Post Post { get; set; } = default!;
 
         public int MyUserIdLogado { get; set; }
-
+        public int totalLikes { get; set; }
 
         //Propriedade para capturar o texto do formulário
         [BindProperty]
@@ -57,6 +57,9 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             }
 
             Post = post;
+
+            //Guardar a contagem de likes que esse Post tem.
+            totalLikes = await _context.Likes.CountAsync(l => l.PostFK == post.Id);
 
             // Verificar se o utilizador logado já deu like neste post
             if (User.Identity.IsAuthenticated)

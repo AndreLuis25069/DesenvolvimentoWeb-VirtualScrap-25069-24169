@@ -43,6 +43,7 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <form method="post" asp-page-handler="Like" asp-route-id="@Model.Post.Id">
+                            <a>@Model.totalLikes</a>
                             <button type="submit" class="btn p-0 border-0 bg-transparent" style="outline: none; shadow: none;">
                                 @if (Model.JaTemLike)
                                 {

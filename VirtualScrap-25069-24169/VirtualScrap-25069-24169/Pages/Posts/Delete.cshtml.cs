@@ -83,6 +83,17 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                 return RedirectToPage("./Index");
             }
 
+            //Eliminar todos os likes que esse post tem 
+            var likesOfPost = await _context.Likes
+                .Where(l => l.PostFK == post.Id)
+                .ToListAsync();
+            _context.Likes.RemoveRange(likesOfPost);
+
+            //Eliminar todos os comentários que esse post tem
+            var postComments = await _context.PostComments
+                .Where(c => c.PostFK == post.Id)
+                .ToListAsync();
+
             //Se passou na validação, então sim, remove-se da base de dados
             Post = post;
             _context.Posts.Remove(Post);
