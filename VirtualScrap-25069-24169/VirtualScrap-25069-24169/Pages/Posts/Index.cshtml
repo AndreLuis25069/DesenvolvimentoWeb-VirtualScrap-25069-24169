@@ -101,7 +101,7 @@
                             item.PostOwner.IdUser == UserManager.GetUserId(User);
                         }
 
-                        @if (donoPost)
+                        @if (donoPost || User.IsInRole("Admin"))
                         {
                             <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" style="font-size: 0.75rem;">✏️</a>
                             <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" style="font-size: 0.75rem;">🗑️</a>

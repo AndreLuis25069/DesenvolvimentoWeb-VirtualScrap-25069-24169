@@ -48,7 +48,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             }
             MyUser = myuser;
 
-            // --- VALIDAÇÃO DE SEGURANÇA NO GET ---
+            //Confirma se o utilizador logado é administrador ou o dono do perfil
             var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
 

@@ -20,11 +20,14 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
         
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context)
+
+        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, SignInManager<IdentityUser> signInManager)
         {
             _context = context;
-            
+            _signInManager = signInManager;
+
         }
 
         [BindProperty]
