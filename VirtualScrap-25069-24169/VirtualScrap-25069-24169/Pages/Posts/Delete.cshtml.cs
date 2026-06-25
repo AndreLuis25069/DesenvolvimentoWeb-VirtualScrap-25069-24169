@@ -42,7 +42,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             var userIdLogado = _userManager.GetUserId(User);
 
             //Verifica se o utilizador logado é o dono do post ou se o dono do post existe ou se quem está a tentar aceder está logado
-            if (!User.Identity.IsAuthenticated || post.PostOwner == null || post.PostOwner.IdUser != userIdLogado)
+            if (!User.Identity.IsAuthenticated || (post.PostOwner?.IdUser != userIdLogado && !User.IsInRole("Admin")))
             {
                 return RedirectToPage("./Index");
             }
@@ -78,7 +78,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             var userIdLogado = _userManager.GetUserId(User);
 
             //Se não for o dono real, redireciona para fora e não apaga nada!
-            if (!User.Identity.IsAuthenticated || post.PostOwner == null || post.PostOwner.IdUser != userIdLogado)
+            if (!User.Identity.IsAuthenticated || (post.PostOwner?.IdUser != userIdLogado && !User.IsInRole("Admin")))
             {
                 return RedirectToPage("./Index");
             }

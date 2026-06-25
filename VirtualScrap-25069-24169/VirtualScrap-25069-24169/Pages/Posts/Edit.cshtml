@@ -2,62 +2,178 @@
 @model VirtualScrap_25069_24169.Pages.Posts.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Post";
 }
+<div class="container my-4" style="max-width: 800px;">
 
-    <h1>Edit</h1>
+    <div class="mb-4">
+        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">
+            ← Voltar
+        </a>
+    </div>
 
-    <h4>Post</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="card border-light shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+
+            <div class="mb-4">
+                <span class="badge bg-dark text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                    Anúncios / Scrap
+                </span>
+                <h1 class="h3 text-dark fw-bold mb-0">Editar Anuncio</h1>
+            </div>
+
+            <div class="d-flex justify-content-center mb-4">
+                <div class="shadow-sm border rounded-3 overflow-hidden bg-light d-flex align-items-center justify-content-center" style="width: 100%; max-width: 250px; height: 250px;">
+                    @if (Model.Post.Photo != null && Model.Post.Photo != "noImage.jpg")
+                    {
+                        <img src="~/images/@Model.Post.Photo" class="w-100 h-100 object-fit-cover" alt="@Model.Post.Title" asp-append-version="true" />
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted">
+                            <span class="fs-1 d-block mb-1">📦</span>
+                            <small class="fw-medium">Sem imagem vinculada</small>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+            <form method="post" enctype="multipart/form-data">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
                 <input type="hidden" asp-for="Post.Id" />
-                <div class="form-group">
-                    <span class="text-danger">*</span>
-                    <label asp-for="Post.Title" class="control-label"></label>
-                    <input asp-for="Post.Title" class="form-control" aria-required="true"/>
-                    <span asp-validation-for="Post.Title" class="text-danger"></span>
+                <input type="hidden" asp-for="Post.Photo" />
+
+                <div class="row g-4">
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Post.Title" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                TÍTULO DO ANÚNCIO <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">🏷️</span>
+                                <input asp-for="Post.Title" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" aria-required="true" placeholder="Ex: Lote de radiadores antigos" />
+                            </div>
+                            <span asp-validation-for="Post.Title" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="Post.Description" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                DESCRIÇÃO DETALHADA <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">📝</span>
+                                <textarea asp-for="Post.Description" class="form-control bg-white border-0 py-2" rows="4" style="font-size: 0.9rem; resize: none;" aria-required="true" placeholder="Indica o estado, peso, etc..."></textarea>
+                            </div>
+                            <span asp-validation-for="Post.Description" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label asp-for="Post.CellPhone" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                TELEMÓVEL DE CONTACTO
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">📞</span>
+                                <input asp-for="Post.CellPhone" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" placeholder="Ex: 912345678" />
+                            </div>
+                            <span asp-validation-for="Post.CellPhone" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label asp-for="Post.CategoryFK" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                CATEGORIA DO MATERIAL <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">📁</span>
+                                <select asp-for="Post.CategoryFK" class="form-select bg-white border-0 py-2" style="font-size: 0.9rem;" asp-items="ViewBag.CategoryFK"></select>
+                            </div>
+                            <span asp-validation-for="Post.CategoryFK" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label asp-for="Post.AuxPrice" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                PREÇO AUXILIAR <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">💶</span>
+                                <input asp-for="Post.AuxPrice" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" placeholder="Ex: 150.00" />
+                            </div>
+                            <span asp-validation-for="Post.AuxPrice" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label asp-for="Post.Localizacao" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                LOCALIZAÇÃO <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">📍</span>
+                                <input asp-for="Post.Localizacao" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" placeholder="Ex: Lisboa, Portugal" />
+                            </div>
+                            <span asp-validation-for="Post.Localizacao" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label asp-for="Post.PostDate" class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                DATA DE PUBLICAÇÃO
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">📅</span>
+                                <input asp-for="Post.PostDate" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" />
+                            </div>
+                            <span asp-validation-for="Post.PostDate" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label class="form-label text-secondary fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                SUBSTITUIR IMAGEM DO POST
+                            </label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                                <span class="input-group-text bg-light border-0 text-muted">🖼️</span>
+                                <input name="PostImage" type="file" accept=".jpeg, .jpg, .png" class="form-control bg-white border-0 py-2" style="font-size: 0.9rem;" />
+                            </div>
+                            <span asp-validation-for="PostImage" class="text-danger small d-block mt-1"></span>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="form-group">
-                    <span class="text-danger">*</span>
-                    <label asp-for="Post.Description" class="control-label"></label>
-                    <input asp-for="Post.Description" class="form-control" aria-required="true"/>
-                    <span asp-validation-for="Post.Description" class="text-danger"></span>
+
+                <hr class="text-muted opacity-25 my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-page="./Index" class="btn btn-sm btn-light px-3 fw-medium rounded-pill">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-dark px-4 fw-medium rounded-pill shadow-sm">
+                        💾 Gravar Alterações
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Post.CellPhone" class="control-label"></label>
-                    <input asp-for="Post.CellPhone" class="form-control" />
-                    <span asp-validation-for="Post.CellPhone" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Post.PostDate" class="control-label"></label>
-                    <input asp-for="Post.PostDate" class="form-control" />
-                    <span asp-validation-for="Post.PostDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <span class="text-danger">*</span>
-                    <label asp-for="Post.Photo" class="control-label"></label>
-                    <input asp-for="Post.Photo" class="form-control" aria-required="true"/>
-                    <span asp-validation-for="Post.Photo" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Post.CategoryFK" class="control-label"></label>
-                    <select asp-for="Post.CategoryFK" class="form-control" asp-items="ViewBag.CategoryFK" ></select>
-                    <span asp-validation-for="Post.CategoryFK" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
-                </div>
+
             </form>
+
         </div>
     </div>
-
-    <div>
-        <a asp-page="./Index">Back to List</a>
-    </div>
+</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

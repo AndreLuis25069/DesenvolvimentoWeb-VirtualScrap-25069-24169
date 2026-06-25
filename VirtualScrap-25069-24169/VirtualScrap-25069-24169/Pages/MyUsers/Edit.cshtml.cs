@@ -98,13 +98,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             }
 
 
-            //Verificar se o utilizador deu input no campo
-            if (ProfileImage == null)
-            {
-                //Reportar o erro e retornar a pagina
-                ModelState.AddModelError("ProfileImage", "A imagem é obrigatoria");
-                
-            }
+           
             //Verificar se não é PNG, JPEG, JPG
             if (ProfileImage.ContentType != "image/jpeg" && ProfileImage.ContentType != "image/png")
             {
