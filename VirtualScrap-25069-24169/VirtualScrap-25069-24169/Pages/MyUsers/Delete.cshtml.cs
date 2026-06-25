@@ -20,11 +20,14 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
         
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context)
+
+        public DeleteModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, SignInManager<IdentityUser> signInManager)
         {
             _context = context;
-            
+            _signInManager = signInManager;
+
         }
 
         [BindProperty]
@@ -55,7 +58,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 .Where(p => p.OwnerFK == MyUser.Id)
                 .ToListAsync();
 
-            // --- VALIDAÇÃO DE SEGURANÇA NO GET ---
+            //Verifica se o utilizador que tem sessão iniciada é administrador ou o dono do perfil
             var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
 
@@ -76,7 +79,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             }
 
 
-            // --- VALIDAÇÃO DE SEGURANÇA NO POST ---
+            //Verifica se o utilizador que tem sessão iniciada é administrador ou o dono do perfil
             var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
 

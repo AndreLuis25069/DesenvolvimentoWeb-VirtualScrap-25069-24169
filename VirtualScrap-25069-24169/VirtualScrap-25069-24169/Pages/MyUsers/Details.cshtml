@@ -21,7 +21,7 @@
             <div class="d-flex align-items-center gap-3 mb-4">
                 
                 <div class="flex-shrink-0">
-                    @if (!string.IsNullOrEmpty(Model.MyUser.Photo))
+                    @if (!string.IsNullOrEmpty(Model.MyUser.Photo) && Model.MyUser.Photo != "noImage.jpg")
                     {
                         <div class="rounded-circle overflow-hidden shadow-sm" style="width: 90px; height: 90px;">
                             <img src="~/images1/@Model.MyUser.Photo" class="w-100 h-100 object-fit-cover" alt="@Model.MyUser.Name" asp-append-version="true" />
@@ -29,10 +29,11 @@
                     }
                     else
                     {
-                        <div class="rounded-circle bg-secondary-subtle d-flex align-items-center justify-content-center shadow-sm text-muted fw-bold fs-2"
-                             style="width: 90px; height: 90px;">
-                            @Model.MyUser.Name.Substring(0, 1).ToUpper()
+                        <div class="rounded-circle overflow-hidden shadow-sm" style="width: 90px; height: 90px;">
+                            <img src="~/defaultProfileImage/No-profile-photo.jpg" class="w-100 h-100 object-fit-cover" alt="@Model.MyUser.Name" asp-append-version="true" />
                         </div>
+
+                       
                     }
                 </div>
 

@@ -1,5 +1,8 @@
-﻿@inject VirtualScrap_25069_24169.Data.ApplicationDbContext _context
-@using Microsoft.EntityFrameworkCore
+﻿@using Microsoft.AspNetCore.Identity
+@using VirtualScrap_25069_24169.Data.Model
+@inject VirtualScrap_25069_24169.Data.ApplicationDbContext Context
+
+@inject UserManager<IdentityUser> UserManager
 @using System.Security.Claims
 <!DOCTYPE html>
 <html lang="pt">
@@ -46,10 +49,10 @@
                     </ul>
 
                     @{
-                            var loginGUID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        var loginGUID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                            if (string.IsNullOrEmpty(loginGUID) )
-                            {
+                        if (string.IsNullOrEmpty(loginGUID))
+                        {
                             <div class="d-flex align-items-center gap-2 border-start ps-md-3 border-secondary">
                                 <a class="btn btn-link text-light text-decoration-none px-3" asp-area="Identity" asp-page="/Account/Login">
                                     🔑 Entrar
@@ -58,33 +61,49 @@
                                     📝 Registar
                                 </a>
                             </div>
+                        }
+                        else
+                        {
+                            //Ir buscar os dados do utilizador com sessão iniciada á base de dados
+                            var dadosDoPerfil = Context.MyUsers.FirstOrDefault(u => u.IdUser == loginGUID);
+                            var fotoNome = dadosDoPerfil?.Photo;
+                            var nome = dadosDoPerfil != null ? dadosDoPerfil.Name : (User.Identity?.Name ?? "Utilizador");
+                            var idDoPerfil = dadosDoPerfil != null ? dadosDoPerfil.Id : 0;
+
+
+                            string fotoDePerfil;
+
+                            // Se o utilizador tem uma foto registada na Base de Dados
+                            if (!string.IsNullOrEmpty(fotoNome) && fotoNome != "noImage.jpg")
+                            {
+                                //Vai a diretoria para as fotos de perfil do utilizador
+                                fotoDePerfil = $"/images1/{fotoNome}";
                             }
                             else
                             {
-                                // Procura o registo na tua tabela correspondente ao utilizador logado
-                                var dadosDoPerfil = _context.MyUsers.FirstOrDefault(u => u.IdUser == loginGUID);
-
-                                // Se encontrar usa o nome da tabela, caso contrário usa o Name antigo por segurança
-                                var nome = dadosDoPerfil != null ? dadosDoPerfil.Name : User.Identity?.Name;
-
-                                // Se não encontrar o perfil na base de dados, o ID da rota passa a 0 para não causar erro
-                                var idDoPerfil = dadosDoPerfil != null ? dadosDoPerfil.Id : 0;
-                                <a class="btn btn-link text-light text-decoration-none px-3" asp-area="" asp-page="/MyUsers/Details" asp-route-id="@idDoPerfil">
-                                🧑 @nome
-                                </a>
+                                //Aponta para a imagem defaul em caso do perfil não ter imagem
+                                fotoDePerfil = "/defaultProfileImage/No-profile-photo.jpg";
+                            }
+                            
+                            
+                                
+                            
+                                    <a class="btn btn-link text-light text-decoration-none px-3 d-inline-flex align-items-center gap-2" asp-page="/MyUsers/Details" asp-route-id="@idDoPerfil">
+                                <img src="@fotoDePerfil" alt="Avatar" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" /> @nome
+                            </a>
 
                             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
                                 <button type="submit" class="nav-link btn btn-link text-light bg-danger p-1">Logout</button>
                             </form>
 
-                            }
+                        }
 
                     }
+
                             
                                                     
        
 
-                    
                 </div>
             </div>
         </nav>
