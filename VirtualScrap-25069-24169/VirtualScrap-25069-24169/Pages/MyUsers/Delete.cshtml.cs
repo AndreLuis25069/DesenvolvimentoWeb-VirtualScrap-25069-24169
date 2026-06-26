@@ -121,10 +121,18 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
 
                 //Remover todos os posts que o utilizador fez
                 var postsDone = await _context.Posts.Where(p => p.OwnerFK == id).ToListAsync();
+                var postsIds = postsDone.Select(p => p.Id).ToList();
+
+
+                var likesOnMyPosts = await _context.Likes.Where(l => postsIds.Contains(l.PostFK)).ToListAsync();
+                _context.Likes.RemoveRange(likesOnMyPosts);
+
+
+                var commentsOnMyPosts = await _context.PostComments.Where(c => postsIds.Contains(c.PostFK)).ToListAsync();
+                _context.PostComments.RemoveRange(commentsOnMyPosts);
+
+
                 _context.Posts.RemoveRange(postsDone);
-                await _context.SaveChangesAsync();
-
-
                 //Manter os comentarios feitos mas remover a chave forasteira para que não exista problemas no momento de eliminar os utilizadores
                 var sentComments = await _context.Comments.Where(s => s.AutorFK == id).ToListAsync();
                 foreach (var comment in sentComments)
