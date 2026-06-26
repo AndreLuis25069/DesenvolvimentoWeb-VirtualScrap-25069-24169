@@ -17,15 +17,7 @@
             @{
                 if (Model.DisplayConfirmAccountLink)
                 {
-                    <div class="bg-secondary-subtle text-secondary small p-3 rounded-3 mb-4 text-start">
-                        <span class="fw-bold d-block mb-1">💡 Nota de Desenvolvimento:</span>
-                        Esta aplicação ainda não tem um servidor de e-mail real configurado. 
-                        Consulta <a href="https://aka.ms/aspaccountconf" target="_blank" class="text-dark fw-medium text-decoration-underline">esta documentação</a> para saberes como o configurar.
-                    </div>
-
-                    <p class="text-secondary mb-4" style="font-size: 0.95rem;">
-                        Em produção, este link seria enviado por e-mail. Para testares agora, clica no botão abaixo:
-                    </p>
+                    
 
                     <a id="confirm-link" href="@Model.EmailConfirmationUrl" class="btn btn-dark w-100 rounded-pill py-2.5 fw-medium shadow-sm transition">
                         Confirmar a Minha Conta →
