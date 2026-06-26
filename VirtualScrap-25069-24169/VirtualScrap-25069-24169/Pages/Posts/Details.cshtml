@@ -230,10 +230,10 @@
                                                 @if (comentario.AutorFK != null && (Model.MyUserIdLogado == comentario.AutorFK || User.IsInRole("Admin") || Model.MyUserIdLogado == Model.Post.OwnerFK))
                                                 {
                                                     <div class="d-flex gap-1">
-                                                        <button type="button" onclick="ativarEdicao(@comentario.Id)" class="text-primary p-0 border-0 bg-transparent" style="font-size: 0.7rem;" title="Editar">
+                                                        <button type="button" onclick="activarEdicao(@comentario.Id)" class="text-primary p-0 border-0 bg-transparent" style="font-size: 0.7rem;" title="Editar">
                                                             ✏️
                                                         </button>
-                                                        <form method="post" asp-page-handler="DeleteComentario" asp-route-id="@Model.Post.Id" asp-route-comentarioId="@comentario.Id" onsubmit="return confirm('Tens a certeza que queres eliminar este comentário?');">
+                                                        <form method="post" asp-page-handler="DeleteComentario" asp-route-id="@Model.Post.Id" asp-route-comentarioId="@comentario.Id" onsubmit="return confirm('Tens a certeza que queres eliminar este comentário?');" class="d-inline">
                                                             <button type="submit" class="text-danger p-0 border-0 bg-transparent" style="font-size: 0.7rem;" title="Eliminar">
                                                                 ❌
                                                             </button>
@@ -246,6 +246,17 @@
                                         <p id="texto-@comentario.Id" class="text-secondary m-0" style="font-size: 0.78rem; white-space: pre-line;">
                                             @comentario.Description
                                         </p>
+
+                                        @if (comentario.AutorFK != null && (Model.MyUserIdLogado == comentario.AutorFK || User.IsInRole("Admin")))
+                                        {
+                                            <form id="form-edit-@comentario.Id" method="post" asp-page-handler="EditComentario" asp-route-id="@Model.Post.Id" asp-route-comentarioId="@comentario.Id" class="d-none mt-1">
+                                                <div class="d-flex gap-1 align-items-center">
+                                                    <input type="text" name="TextoEditado" value="@comentario.Description" class="form-control form-control-sm py-1" style="font-size: 0.78rem; border-radius: 10px;" required />
+                                                    <button type="submit" class="btn btn-sm btn-dark px-2 py-1" style="font-size: 0.7rem; border-radius: 8px;">💾</button>
+                                                    <button type="button" onclick="cancelarEdicao(@comentario.Id)" class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.7rem; border-radius: 8px;">✕</button>
+                                                </div>
+                                            </form>
+                                        }
                                     </div>
                                 </div>
                             }
@@ -264,16 +275,23 @@
     </div>
 </div>
 
-<script>
-    function activarEdicao(id) {
-        document.getElementById('texto-' + id).classList.add('d-none');
-        document.getElementById('form-edit-' + id).classList.remove('d-none');
-    }
-    function cancelarEdicao(id) {
-        document.getElementById('texto-' + id).classList.remove('d-none');
-        document.getElementById('form-edit-' + id).classList.add('d-none');
-    }
-</script>
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+    <script src="~/js/realtimeposts.js" data-post-id="@Model.Post.Id " data-user-id="@Model.MyUserIdLogado"
+        data-is-admin="@User.IsInRole("Admin").ToString().ToLower()"></script>
+
+    <script>
+        function activarEdicao(id) {
+            document.getElementById('texto-' + id).classList.add('d-none');
+            document.getElementById('form-edit-' + id).classList.remove('d-none');
+        }
+        function cancelarEdicao(id) {
+            document.getElementById('texto-' + id).classList.remove('d-none');
+            document.getElementById('form-edit-' + id).classList.add('d-none');
+        }
+    </script>
+}
 
 <style>
     .comments-list::-webkit-scrollbar { width: 5px; }
