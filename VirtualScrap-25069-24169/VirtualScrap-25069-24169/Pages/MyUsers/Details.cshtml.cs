@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using VirtualScrap_25069_24169.Data.Model;
+using VirtualScrap_25069_24169.Hubs;
 
 namespace VirtualScrap_25069_24169.Pages.MyUsers
 {
@@ -13,10 +15,12 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        public DetailsModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        private readonly IHubContext<SignalRHub> _hubContext;
+        public DetailsModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, UserManager<IdentityUser> userManager, IHubContext<SignalRHub> hubContext)
         {
             _context = context;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         public MyUser MyUser { get; set; } = default!;
@@ -84,6 +88,8 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             _context.Attach(rating).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
+            //Avisa o SignalR que pode mostrar as alterações
+            await _hubContext.Clients.Group($"Profile_{Id}").SendAsync("ReceiveProfileEdit", ratingId, rating.Rating, rating.Description);
             return RedirectToPage(new { id = Id });
         }
 
@@ -116,6 +122,8 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             //Proceder á eliminação do comentário
             _context.Comments.Remove(rating);
             await _context.SaveChangesAsync();
+            //Avisa o SignalR que pode retirar a avaliação da tela
+            await _hubContext.Clients.Group($"Profile_{Id}").SendAsync("ReceiveProfileDelete", ratingId);
 
             return RedirectToPage(new { id = Id });
         }
@@ -175,6 +183,18 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
 
                 _context.Comments.Add(Comment);
                 await _context.SaveChangesAsync();
+
+                //Vai tentar enviar os dados do objeto para o SignalR 
+                await _hubContext.Clients.Group($"Profile_{id.Value}").SendAsync(
+                    "ReceberAvaliacaoUtilizador",
+                    myUserCommentator.Name,
+                    myUserCommentator.Photo ?? "No-profile-photo.jpg",
+                    Comment.Rating,
+                    Comment.Description,
+                    Comment.CommentDate.ToString("dd/MM/yyyy HH:mm"),
+                    myUserId,
+                    Comment.Id
+                );
 
                 // Recarrega o perfil atualizado para o utilizador ver o seu comentário na lista
                 MyUser = await _context.MyUsers

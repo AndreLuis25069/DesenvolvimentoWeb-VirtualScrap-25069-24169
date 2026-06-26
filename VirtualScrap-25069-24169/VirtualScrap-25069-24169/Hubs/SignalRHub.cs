@@ -10,7 +10,7 @@ namespace VirtualScrap_25069_24169.Hubs
         }
 
         //Junta os utilizadores que estão a ver o perfil em simultaneo, em um grupo
-        public async Task JoinProfileGroup(string profileUserId)
+        public async Task JoinProfileGroup(int profileUserId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, $"Profile_{profileUserId}");
         }
