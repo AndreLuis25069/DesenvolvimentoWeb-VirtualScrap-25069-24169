@@ -99,7 +99,7 @@ namespace VirtualScrap_25069_24169.Data.Model
         /// </summary>
         [Display(Name = "Categoria")]
         [ForeignKey(nameof(PostCategory))]
-        public int CategoryFK { get; set; }
+        public int? CategoryFK { get; set; }
 
 
 

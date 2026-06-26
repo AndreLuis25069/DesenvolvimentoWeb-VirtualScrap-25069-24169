@@ -28,6 +28,8 @@ namespace VirtualScrap_25069_24169.Pages.Posts
         public int MyUserIdLogado { get; set; }
         public int totalLikes { get; set; }
 
+        public MyUser? MyUserLogado { get; set; }
+
         //Propriedade para capturar o texto do formulário
         [BindProperty]
         [Required(ErrorMessage = "O comentário não pode estar vazio.")]
@@ -58,6 +60,8 @@ namespace VirtualScrap_25069_24169.Pages.Posts
 
             Post = post;
 
+            
+
             //Guardar a contagem de likes que esse Post tem.
             totalLikes = await _context.Likes.CountAsync(l => l.PostFK == post.Id);
 
@@ -66,9 +70,11 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             {
                 var identityUserId = _userManager.GetUserId(User);
                 var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUserId);
+               
 
                 if (myUser != null)
                 {
+                    MyUserLogado = myUser;
                     // Vê se existe algum registo na tabela Like com o ID do user e do Post
                     JaTemLike = await _context.Set<Like>()
                         .AnyAsync(l => l.LikeAutorFK == myUser.Id && l.PostFK == post.Id);

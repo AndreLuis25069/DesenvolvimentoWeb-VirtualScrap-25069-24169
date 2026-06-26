@@ -29,7 +29,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
 
         [BindProperty]
         public MyUser MyUser { get; set; } = default!;
-        public IFormFile ProfileImage { get; set; }
+        public IFormFile? ProfileImage { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             //Se o id for nulo retorna erro 
@@ -82,35 +82,47 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 return RedirectToPage("/Index");
             }
 
-            // --- VALIDAÇÃO DE SEGURANÇA NO POST ---
+            //Valida se o utilizador tentou entrar pelo link direto e não é administrador nem dono do perfil, se for o caso volta para a pagina inicial
             var userIdLogado = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
 
-            // Vai buscar o IdUser real que está guardado na base de dados para este perfil
-            var idUserRealNaBD = await _context.MyUsers
+            // Vai buscar os  dados do utilizador real que está guardado na base de dados para este perfil
+            var dadosReaisBD = await _context.MyUsers
                 .Where(u => u.Id == MyUser.Id)
-                .Select(u => u.IdUser)
+                .Select(u => new { u.IdUser, u.Photo })
                 .FirstOrDefaultAsync();
 
-            if (!isAdmin && idUserRealNaBD != userIdLogado)
+            //Confirma se existem dados ou se o utilizador logado é administrador ou o dono do perfil, caso contrário volta para a pagina inicial
+            if (dadosReaisBD == null || (!isAdmin && dadosReaisBD.IdUser != userIdLogado))
             {
-                return RedirectToPage("/Index"); // Bloqueio total se os IDs não baterem certo
+                return RedirectToPage("/Index"); 
             }
 
 
-           
-            //Verificar se não é PNG, JPEG, JPG
-            if (ProfileImage.ContentType != "image/jpeg" && ProfileImage.ContentType != "image/png")
+            //Verificar se no campo de imagem no browser foi feito o upload de uma nova imagem
+            if (ProfileImage != null)
             {
-                //Reportar o erro e retornar a pagina
-                ModelState.AddModelError("ImagePost", "O ficheiro deve ser JPEG ou JPG ou PNG");
-                return Page();
+                // Verificar a extensão/tipo do ficheiro para segurança
+                if (ProfileImage.ContentType != "image/jpeg" && ProfileImage.ContentType != "image/png" && ProfileImage.ContentType != "image/jpg")
+                {
+                    ModelState.AddModelError("ProfileImage", "O ficheiro deve ser do tipo JPEG, JPG ou PNG.");
+                    return Page();
+                }
+
+                // Gera o novo nome único para a imagem nova
+                var imageName = Guid.NewGuid().ToString() + Path.GetExtension(ProfileImage.FileName).ToLowerInvariant();
+                MyUser.Photo = imageName;
+            }
+            else
+            {
+                //  Se não fez upload de imagem nova, mantém a imagem que ele já tinha guardada BD
+                MyUser.Photo = dadosReaisBD.Photo;
             }
 
-            //Variavel para guardar um GUID do ficheiro
-            var imageName = Guid.NewGuid().ToString() + Path.GetExtension(ProfileImage.FileName).ToLowerInvariant();
-            //Atribuir ao valor da variavel photo, do modelo da BD
-            MyUser.Photo = imageName;
+            // Forçamos a limpeza da validação do IdUser porque ele não vem do formulário e daria erro no ModelState
+            ModelState.Remove("MyUser.IdUser");
+
+          
 
             
             if (!ModelState.IsValid)
@@ -124,24 +136,23 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
             _context.Entry(MyUser).Property(x => x.IdUser).IsModified = false;
             try
             {
+                //Tenta guardar as alterações na base de dados
                 await _context.SaveChangesAsync();
-
-                //Processo de guardar a imagem no disco rigido do servidor
-                string imagePath = _webHostEnvironment.WebRootPath;
-                imagePath = Path.Combine(imagePath, "images1");
-                if (!Directory.Exists(imagePath))
+                //Se o utilizador fez upload de uma nova imagem, guarda a imagem no servidor
+                if (ProfileImage != null && !string.IsNullOrEmpty(MyUser.Photo))
                 {
-                    Directory.CreateDirectory(imagePath);
-                }
+                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images1");
+                    if (!Directory.Exists(imagePath))
+                    {
+                        Directory.CreateDirectory(imagePath);
+                    }
 
-                //Combina o caminho da diretoria criada com o GUID da imagem
-                string fullPath = Path.Combine(imagePath, MyUser.Photo);
-                using (var stream = new FileStream(fullPath, FileMode.Create))
-                {
-                    await ProfileImage.CopyToAsync(stream);
+                    string fullPath = Path.Combine(imagePath, MyUser.Photo);
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        await ProfileImage.CopyToAsync(stream);
+                    }
                 }
-
-                return Page();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -155,7 +166,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new {id = MyUser.Id});
         }
 
         private bool MyUserExists(int id)

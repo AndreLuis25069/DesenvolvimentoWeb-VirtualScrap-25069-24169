@@ -91,9 +91,12 @@
             <hr class="text-muted opacity-25 mb-4" />
 
             <div class="d-flex justify-content-end gap-2">
-                <a asp-page="./Edit" asp-route-id="@Model.MyUser.Id" class="btn btn-sm btn-outline-dark px-3 fw-medium">
-                    ✏️ Editar Perfil
-                </a>
+                    @if (User.Identity.IsAuthenticated && (Model.MyUser.IdUser == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value || User.IsInRole("Admin")))
+                    {
+                        <a asp-page="./Edit" asp-route-id="@Model.MyUser.Id" class="btn btn-sm btn-outline-dark px-3 fw-medium">
+                            ✏️ Editar Perfil
+                        </a>
+                    }
             </div>
 
         </div>
@@ -134,26 +137,35 @@
             <div class="card-body p-4">
                 <h5 class="text-dark fw-bold mb-4">💬 Avaliações & Comentários</h5>
                 
-                <form method="post" class="mb-4 bg-light p-3 rounded-3">
-                    <small class="text-muted d-block fw-bold mb-2" style="font-size: 0.65rem; letter-spacing: 0.5px;">AVALIAR ESTE UTILIZADOR</small>
-                    <div class="row g-2 align-items-center mb-2">
-                        <div class="col-auto">
-                            <select asp-for="Comment.Rating" class="form-select form-select-sm border-0 bg-white shadow-sm" style="border-radius: 20px;">
-                                <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                                <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                                <option value="3">⭐⭐⭐ (3/5)</option>
-                                <option value="2">⭐⭐ (2/5)</option>
-                                <option value="1">⭐ (1/5)</option>
-                            </select>
+                @if (!OProprioPerfil || User.IsInRole("Admin"))
+{
+                    <form method="post" class="mb-4 bg-light p-3 rounded-3">
+                        <small class="text-muted d-block fw-bold mb-2" style="font-size: 0.65rem; letter-spacing: 0.5px;">AVALIAR ESTE UTILIZADOR</small>
+                        <div class="row g-2 align-items-center mb-2">
+                            <div class="col-auto">
+                                <select asp-for="Comment.Rating" class="form-select form-select-sm border-0 bg-white shadow-sm" style="border-radius: 20px;">
+                                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                    <option value="3">⭐⭐⭐ (3/5)</option>
+                                    <option value="2">⭐⭐ (2/5)</option>
+                                    <option value="1">⭐ (1/5)</option>
+                                </select>
+                            </div>
                         </div>
+                        <div class="position-relative">
+                            <textarea asp-for="Comment.Description" class="form-control bg-white border-0 shadow-sm" rows="2" placeholder="Escreve uma avaliação..." style="font-size: 0.85rem; resize: none; border-radius: 15px; padding-right: 50px;" required></textarea>
+                            <button type="submit" class="btn btn-dark rounded-circle position-absolute d-flex align-items-center justify-content-center shadow-sm" style="right: 12px; bottom: 12px; width: 32px; height: 32px; padding: 0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-send-fill text-white" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" /></svg>
+                            </button>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-secondary py-2 small mb-4 rounded-3 text-center">
+                        💡 Não podes deixar uma avaliação ou comentário no teu próprio perfil.
                     </div>
-                    <div class="position-relative">
-                        <textarea asp-for="Comment.Description" class="form-control bg-white border-0 shadow-sm" rows="2" placeholder="Escreve uma avaliação..." style="font-size: 0.85rem; resize: none; border-radius: 15px; padding-right: 50px;" required></textarea>
-                        <button type="submit" class="btn btn-dark rounded-circle position-absolute d-flex align-items-center justify-content-center shadow-sm" style="right: 12px; bottom: 12px; width: 32px; height: 32px; padding: 0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-send-fill text-white" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.001.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" /></svg>
-                        </button>
-                    </div>
-                </form>
+                }
 
                 <div class="d-flex flex-column gap-3">
                     @if (Model.MyUser.ReceivedComments != null && Model.MyUser.ReceivedComments.Any())
@@ -167,23 +179,16 @@
 
                             <div class="d-flex gap-2 align-items-start">
 
-                                @if (comment.AutorFK != null && comment.Autor != null && !string.IsNullOrEmpty(comment.Autor.Photo))
-                                {
-                                    <img src="~/images1/@comment.Autor.Photo" alt="Foto" class="rounded-circle object-fit-cover" style="width: 36px; height: 36px;" />
-                                }
-                                else
-                                {
-                                    <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.8rem;">
-                                        @if (comment.AutorFK == null)
+                                    <div style="width: 36px; height: 36px; flex-shrink: 0;">
+                                        @if (comment.AutorFK != null && comment.Autor != null && !string.IsNullOrEmpty(comment.Autor.Photo) && comment.Autor.Photo != "noImage.jpg")
                                         {
-                                            <span>X</span>
+                                            <img src="~/images1/@comment.Autor.Photo" alt="Foto de Perfil" class="rounded-circle object-fit-cover w-100 h-100" asp-append-version="true" />
                                         }
                                         else
                                         {
-                                            @comment.Autor.Name.Substring(0, 1).ToUpper()
+                                            <img src="~/defaultProfileImage/No-profile-photo.jpg" alt="Perfil Padrão" class="rounded-circle object-fit-cover w-100 h-100" asp-append-version="true" />
                                         }
                                     </div>
-                                }
 
                                 <div class="bg-light p-3 rounded-3 w-100" style="border-top-left-radius: 0px !important;">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
@@ -201,7 +206,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="text-muted" style="font-size: 0.65rem;">📅 @comment.CommentDate.ToString("dd/MM/yyyy HH:mm")</span>
 
-                                            @if (isAdmin || isCommentOwner)
+                                            @if ( isCommentOwner || isAdmin)
                                             {
                                                 <div class="d-flex gap-1 ms-2">
                                                     @if (isCommentOwner || isAdmin)

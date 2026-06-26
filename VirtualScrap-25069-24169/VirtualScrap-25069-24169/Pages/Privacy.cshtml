@@ -1,8 +1,81 @@
 ﻿@page
 @model PrivacyModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Política de Privacidade";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container my-5" style="max-width: 850px;">
+
+    <div class="mb-4">
+        <a asp-page="/Index" class="btn btn-sm btn-outline-secondary">
+            ← Voltar ao Início
+        </a>
+    </div>
+
+    <div class="card border-light shadow-sm rounded-3">
+        <div class="card-body p-4 p-sm-5">
+
+           
+            <div class="mb-4">
+                <span class="badge bg-dark text-uppercase mb-2 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                    Legal & Transparência
+                </span>
+                <h1 class="h2 text-dark fw-bold mb-1">Política de Privacidade</h1>
+                <p class="text-muted small mb-0">Última atualização: @DateTime.Now.ToString("dd/MM/yyyy")</p>
+            </div>
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+          
+            <div class="text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
+
+                <p class="mb-4">
+                    No <strong>VirtualScrap</strong>, acessível a partir do nosso domínio, uma das nossas principais prioridades é a privacidade dos nossos visitantes e membros. Este documento contém os tipos de informações que são recolhidos e registados pela plataforma e a forma como os utilizamos.
+                </p>
+
+                <h3 class="h5 text-dark fw-bold mt-4 mb-2">1. Informações que Recolhemos</h3>
+                <p class="mb-3">
+                    Quando te registas no VirtualScrap ou geras um anúncio de sucata/material, solicitamos dados pessoais estritamente necessários para o funcionamento do mercado e segurança das transações:
+                </p>
+                <ul class="mb-4 ps-3">
+                    <li class="py-1"><strong>Dados de Perfil:</strong> Nome completo, endereço de email e palavra-passe encriptada.</li>
+                    <li class="py-1"><strong>Dados de Contacto:</strong> Número de telemóvel (opcional, para facilidade de negócio entre compradores e vendedores).</li>
+                    <li class="py-1"><strong>Dados dos Anúncios:</strong> Fotos do material, localização geográfica aproximada, descrições e preços inseridos.</li>
+                </ul>
+
+                <h3 class="h5 text-dark fw-bold mt-4 mb-2">2. Como Utilizamos as Tuas Informações</h3>
+                <p class="mb-3">
+                    Utilizamos as informações recolhidas de várias formas, incluindo para:
+                </p>
+                <ul class="mb-4 ps-3">
+                    <li class="py-1">Disponibilizar, operar e manter a nossa plataforma de economia circular.</li>
+                    <li class="py-1">Melhorar, personalizar e expandir as funcionalidades do mercado.</li>
+                    <li class="py-1">Compreender e analisar como utilizas o nosso ecossistema de anúncios.</li>
+                    <li class="py-1">Prevenir fraudes e garantir que o ambiente de negociação de materiais permanece seguro para todos.</li>
+                </ul>
+
+                <h3 class="h5 text-dark fw-bold mt-4 mb-2">3. Retenção e Eliminação de Dados</h3>
+                <p class="mb-3">
+                    Os teus dados são mantidos enquanto a tua conta estiver ativa no sistema. Como viste nas configurações de conta:
+                </p>
+                <ul class="mb-4 ps-3">
+                    <li class="py-1">Se decidires <strong>eliminar permanentemente</strong> a tua conta, os teus dados de perfil e anúncios associados serão totalmente destruídos.</li>
+                    <li class="py-1">Quaisquer comentários ou feedback deixados noutros perfis serão mantidos de forma anónima sob o rótulo de <em>"Utilizador Removido"</em> para preservar o histórico do sistema sem te identificar.</li>
+                </ul>
+
+                <h3 class="h5 text-dark fw-bold mt-4 mb-2">4. Segurança dos Dados</h3>
+                <p class="mb-4">
+                    A segurança dos teus dados é de extrema importância para nós. Utilizamos tecnologias modernas de encriptação (hashing) fornecidas pelo ecossistema ASP.NET Core Identity para proteger as tuas credenciais contra acessos não autorizados.
+                </p>
+
+                <div class="alert alert-light border rounded-3 p-3 text-center bg-light mt-4 shadow-sm">
+                    <span class="d-block text-dark small fw-medium">
+                        ♻️ Ao continuares a utilizar o VirtualScrap, concordas explicitamente com a nossa recolha ética de dados focado na reciclagem e sustentabilidade.
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -2,58 +2,130 @@
 @model VirtualScrap_25069_24169.Pages.Posts.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Eliminar Post";
 }
 
+<div class="container my-4" style="max-width: 700px;">
 
-    <h1>Apagar Post</h1>
-
-    <h3>Tem a certeza que quer apagar este post?</h3>
-    <div>
-        <h4>Post</h4>
-        <hr />
-        <dl class="row">
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Post.Title)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Post.Title)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Post.Description)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Post.Description)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Post.CellPhone)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Post.CellPhone)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Post.PostDate)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Post.PostDate)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Post.Photo)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Post.Photo)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Post.PostCategory)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Post.PostCategory.Id)
-            </dd>
-        </dl>
-
-        <form method="post">
-            <input type="hidden" asp-for="Post.Id" />
-            <input type="submit" value="Delete" class="btn btn-danger" /> |
-            <a asp-page="./Index">Voltar à lista</a>
-        </form>
+    <div class="mb-4">
+        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">
+            ← Voltar à Lista
+        </a>
     </div>
+
+    <div class="card border-light shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="bg-light text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm fs-4" style="width: 50px; height: 50px;">
+                    📦
+                </div>
+                <div>
+                    <span class="badge bg-secondary text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                        Anúncio / Remoção
+                    </span>
+                    <h1 class="h3 text-dark fw-bold mb-0">@Model.Post.Title</h1>
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <small class="text-muted d-block fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">DESCRIÇÃO</small>
+                    <p class="text-dark fw-medium bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;">
+                        @Html.DisplayFor(model => model.Post.Description)
+                    </p>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <small class="text-muted d-block fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">CATEGORIA</small>
+                    <span class="badge bg-dark text-uppercase mt-1" style="font-size: 0.7rem;">
+                        @(Model.Post.PostCategory != null ? Model.Post.PostCategory.Name : "Removida")
+                    </span>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <small class="text-muted d-block fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">DATA DE PUBLICAÇÃO</small>
+                    <span class="text-dark fw-medium d-block mt-1">📅 @Model.Post.PostDate.ToString("dd/MM/yyyy")</span>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <small class="text-muted d-block fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">CONTATO</small>
+                    <span class="text-dark fw-medium d-block mt-1">
+                        📞 @(string.IsNullOrEmpty(Model.Post.CellPhone) ? "Não disponível" : Model.Post.CellPhone)
+                    </span>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Post.Photo))
+                {
+                    <div class="col-12 col-sm-6">
+                        <small class="text-muted d-block fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 0.5px;">IMAGEM ANEXADA</small>
+                        <div class="ratio ratio-4x3 bg-light rounded overflow-hidden shadow-sm" style="max-width: 150px;">
+                            <img src="~/images/@Model.Post.Photo" class="object-fit-cover" alt="Foto do Post" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <hr class="text-muted opacity-25 mb-4" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="./Index" class="btn btn-sm btn-light px-3 fw-medium rounded-pill">
+                    Cancelar
+                </a>
+                <button type="button" class="btn btn-sm btn-danger px-4 fw-medium rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                    🗑️ Eliminar Post
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
+        <div class="modal-content border-0 shadow rounded-3">
+
+            <div class="modal-header border-0 pt-4 px-4 d-flex align-items-center">
+                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm fs-5 me-3" style="width: 42px; height: 42px; flex-shrink: 0;">
+                    ⚠️
+                </div>
+                <div>
+                    <span class="badge bg-danger text-uppercase mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px;">Ação Crítica</span>
+                    <h5 class="modal-title text-dark fw-bold" id="modalLabel">Confirmar Eliminação</h5>
+                </div>
+                <button type="button" class="btn-close ms-auto mb-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body px-4 pb-0">
+                <p class="text-secondary small mb-3">
+                    Tens a certeza que queres eliminar permanentemente o anúncio <strong>@Model.Post.Title</strong>?
+                </p>
+                <div class="alert alert-warning border-0 rounded-3 p-3 mb-0 shadow-sm">
+                    <small class="fw-bold d-block text-warning-emphasis mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                        CONSEQUÊNCIAS DESTA AÇÃO:
+                    </small>
+                    <ul class="mb-0 ps-3 text-dark small" style="font-size: 0.8rem;">
+                        <li class="py-1">Todos os comentários e gostos associados serão apagados.</li>
+                        <li class="py-1">Esta operação é definitiva e irreversível.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 p-4 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-sm btn-light px-3 fw-medium rounded-pill" data-bs-dismiss="modal">
+                    Não, Cancelar
+                </button>
+
+                <form method="post" class="d-inline">
+                    <input type="hidden" asp-for="Post.Id" />
+                    <button type="submit" class="btn btn-sm btn-danger px-4 fw-medium rounded-pill shadow-sm">
+                        🔥 Sim, Eliminar Tudo
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

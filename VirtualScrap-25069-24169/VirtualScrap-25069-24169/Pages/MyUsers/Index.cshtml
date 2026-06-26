@@ -62,19 +62,17 @@
                                     {
                                         @if (isAdmin)
                                         {
-                                            <form method="post" asp-page-handler="RetirarAdmin" asp-route-idUser="@item.IdUser" onsubmit="return confirm('Tens a certeza que queres despromover este Administrador?');">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem; border-radius: 6px;">
-                                                    Retirar Admin
-                                                </button>
-                                            </form>
+                                            <!-- Botão que abre o Modal de Despromover -->
+                                            <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2.5" style="font-size: 0.75rem; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#modalRetirarAdmin-@item.Id">
+                                                Retirar Admin
+                                            </button>
                                         }
                                         else
                                         {
-                                            <form method="post" asp-page-handler="TornarAdmin" asp-route-idUser="@item.IdUser" onsubmit="return confirm('Queres mesmo dar permissões totais de Admin a este utilizador?');">
-                                                <button type="submit" class="btn btn-sm btn-outline-success py-1 px-2.5" style="font-size: 0.75rem; border-radius: 6px;">
-                                                    Tornar Admin
-                                                </button>
-                                            </form>
+                                            <!-- Botão que abre o Modal de Promover -->
+                                            <button type="button" class="btn btn-sm btn-outline-success py-1 px-2.5" style="font-size: 0.75rem; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#modalTornarAdmin-@item.Id">
+                                                Tornar Admin
+                                            </button>
                                         }
                                     }
 
@@ -88,6 +86,69 @@
                                 </div>
                             </td>
                         </tr>
+
+                        <!-- MODAL: Tornar Admin -->
+                        <div class="modal fade" id="modalTornarAdmin-@item.Id" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+                                <div class="modal-content border-0 shadow rounded-3 text-start">
+                                    <div class="modal-header border-0 pt-4 px-4 d-flex align-items-center">
+                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm fs-5 me-3" style="width: 42px; height: 42px; flex-shrink: 0;">
+                                            🛡️
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success text-uppercase mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px;">Permissões</span>
+                                            <h5 class="modal-title text-dark fw-bold">Promover Utilizador</h5>
+                                        </div>
+                                        <button type="button" class="btn-close ms-auto mb-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body px-4 pb-0">
+                                        <p class="text-secondary small mb-0">
+                                            Queres dar permissões totais de <strong>Administrador</strong> a <strong>@item.Name</strong>? Este perfil passará a poder gerir todas as áreas do VirtualScrap.
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer border-0 p-4 d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn btn-sm btn-light px-3 fw-medium rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                                        <form method="post" asp-page-handler="TornarAdmin" asp-route-idUser="@item.IdUser" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success px-4 fw-medium rounded-pill shadow-sm">
+                                                ✅ Sim, Tornar Admin
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MODAL: Retirar Admin -->
+                        <div class="modal fade" id="modalRetirarAdmin-@item.Id" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+                                <div class="modal-content border-0 shadow rounded-3 text-start">
+                                    <div class="modal-header border-0 pt-4 px-4 d-flex align-items-center">
+                                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm fs-5 me-3" style="width: 42px; height: 42px; flex-shrink: 0;">
+                                            ⚠️
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-danger text-uppercase mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px;">Alteração Crítica</span>
+                                            <h5 class="modal-title text-dark fw-bold">Despromover Administrador</h5>
+                                        </div>
+                                        <button type="button" class="btn-close ms-auto mb-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body px-4 pb-0">
+                                        <p class="text-secondary small mb-0">
+                                            Tens a certeza que queres retirar os privilégios de Admin a <strong>@item.Name</strong>? O utilizador perderá o acesso às configurações globais.
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer border-0 p-4 d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn btn-sm btn-light px-3 fw-medium rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                                        <form method="post" asp-page-handler="RetirarAdmin" asp-route-idUser="@item.IdUser" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger px-4 fw-medium rounded-pill shadow-sm">
+                                                🔥 Sim, Retirar Permissões
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     }
                 </tbody>
             </table>

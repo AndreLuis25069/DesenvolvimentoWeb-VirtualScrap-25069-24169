@@ -53,9 +53,18 @@ namespace VirtualScrap_25069_24169.Pages.Categories
             var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
-                Category = category;
-                _context.Categories.Remove(Category);
+                var associatedPosts = await _context.Posts
+                .Where(p => p.CategoryFK == id)
+                .ToListAsync();
+
+                foreach (var post in associatedPosts)
+                {
+                    post.CategoryFK = null;
+                }
+                _context.Categories.Remove(category);
                 await _context.SaveChangesAsync();
+
+                
             }
 
             return RedirectToPage("./Index");

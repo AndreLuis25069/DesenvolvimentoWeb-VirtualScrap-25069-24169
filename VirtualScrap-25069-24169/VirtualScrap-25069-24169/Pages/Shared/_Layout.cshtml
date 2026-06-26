@@ -35,16 +35,20 @@
                             <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/Index">🏠 Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/Posts/Index">📦 Posts</a>
+                            <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/Posts/Index">📦 Mercado da Comunidade</a>
                         </li>
+                        
+                        @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/MyUsers/index">👥 Utilizadores</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/Categories/Index">🏷️ Categorias</a>
+                            </li>
+                        }
                         <li class="nav-item">
-                            <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/MyUsers/index">👥 Users</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/Categories/Index">🏷️ Categories</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/Privacy">🔒 Privacy</a>
+                            <a class="nav-link px-3 rounded text-light hover-effect" asp-area="" asp-page="/Privacy">🔒 Privacidade</a>
                         </li>
                     </ul>
 
@@ -115,12 +119,26 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted bg-light py-3 mt-auto">
-        <div class="container d-flex justify-content-between align-items-center flex-wrap">
-            <span>&copy; 2026 - <span class="fw-bold text-dark">VirtualScrap</span> - Todos os direitos reservados.</span>
-            <a class="text-decoration-none text-muted" asp-area="" asp-page="/Privacy">Política de Privacidade</a>
+    <footer class="border-top footer text-muted bg-white py-4 mt-auto shadow-sm" style="border-color: rgba(0,0,0,0.05) !important;">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+       
+        <div class="d-flex align-items-center gap-2 small">
+            <span class="fs-6">♻️</span>
+            <span class="text-secondary">
+                &copy; 2026 - <span class="fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px; font-size: 0.85rem;">Virtual<span class="text-warning" style="color: #ffc107 !important;">Scrap</span></span>
+            </span>
+            <span class="text-muted opacity-50 d-none d-sm-inline">|</span>
+            <span class="text-muted d-none d-sm-inline" style="font-size: 0.8rem;">Todos os direitos reservados.</span>
         </div>
-    </footer>
+
+       
+        <div class="d-flex align-items-center gap-3" style="font-size: 0.8rem;">
+            <a class="text-decoration-none text-secondary fw-medium hover-dark transition" asp-area="" asp-page="/Privacy">
+                Política de Privacidade
+            </a>
+        </div>
+    </div>
+</footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
