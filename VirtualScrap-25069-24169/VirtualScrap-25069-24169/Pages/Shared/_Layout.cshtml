@@ -96,9 +96,9 @@
                                 <img src="@fotoDePerfil" alt="Avatar" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" /> @nome
                             </a>
 
-                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                                <button type="submit" class="nav-link btn btn-link text-light bg-danger p-1">Logout</button>
-                            </form>
+                            <a asp-area="Identity" asp-page="/Account/Logout" class="nav-link btn btn-link text-light bg-danger p-1 text-decoration-none rounded px-2">
+                              Logout
+                            </a>
 
                         }
 

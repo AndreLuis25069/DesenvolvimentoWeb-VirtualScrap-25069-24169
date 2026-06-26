@@ -91,6 +91,11 @@ namespace VirtualScrap_25069_24169.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
+            if (!string.IsNullOrEmpty(returnUrl) && returnUrl.Contains("Logout", StringComparison.OrdinalIgnoreCase))
+            {
+                returnUrl = null;
+            }
+
             returnUrl ??= Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
@@ -103,18 +108,29 @@ namespace VirtualScrap_25069_24169.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+          
+            if (!string.IsNullOrEmpty(returnUrl) && returnUrl.Contains("Logout", StringComparison.OrdinalIgnoreCase))
+            {
+                returnUrl = null;
+            }
+
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    
+                    if (string.IsNullOrEmpty(returnUrl) || returnUrl == "/" || returnUrl.Contains("Logout", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return RedirectToPage("/Index", new { area = "" });
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -133,7 +149,7 @@ namespace VirtualScrap_25069_24169.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+          
             return Page();
         }
     }
