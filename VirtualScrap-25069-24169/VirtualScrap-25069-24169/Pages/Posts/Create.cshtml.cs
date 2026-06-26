@@ -92,9 +92,8 @@ namespace VirtualScrap_25069_24169.Pages.Posts
                 _context.Posts.Add(Post);
                 await _context.SaveChangesAsync();
 
-                //Processo de guardar a imagem no disco rigido do servidor
-                string imagePath = _webHostEnvironment.WebRootPath;
-                imagePath = Path.Combine(imagePath, "images");
+                // O WebRootPath vai direto para o wwwroot correto, tanto no PC como no Azure!
+                string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images");
                 if (!Directory.Exists(imagePath)){
                     Directory.CreateDirectory(imagePath);
                 }
