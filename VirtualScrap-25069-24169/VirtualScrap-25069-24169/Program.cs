@@ -5,11 +5,15 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
+using VirtualScrap_25069_24169.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+//Adiciona o suporte para o SignalR
+builder.Services.AddSignalR();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -57,6 +61,9 @@ app.UseRouting();
 // começar a usar, realmente, os 'cookies'
 app.UseSession();
 app.UseAuthorization();
+
+//Adicionar o mapeamento do SignalRHub para a rota "/signalRHub"
+app.MapHub<SignalRHub>("/signalRHub");
 
 app.MapStaticAssets();
 app.MapRazorPages()

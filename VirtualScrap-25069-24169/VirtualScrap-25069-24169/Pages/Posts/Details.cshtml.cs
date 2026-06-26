@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
+using Microsoft.AspNetCore.SignalR;
+using VirtualScrap_25069_24169.Hubs;
+
 
 namespace VirtualScrap_25069_24169.Pages.Posts
 {
@@ -16,11 +20,12 @@ namespace VirtualScrap_25069_24169.Pages.Posts
     {
         private readonly VirtualScrap_25069_24169.Data.ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-
-        public DetailsModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        private readonly IHubContext<SignalRHub> _hubContext;
+        public DetailsModel(VirtualScrap_25069_24169.Data.ApplicationDbContext context, UserManager<IdentityUser> userManager, IHubContext<SignalRHub> hubContext)
         {
             _context = context;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         public Post Post { get; set; } = default!;
@@ -120,6 +125,8 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             _context.Attach(comentario).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
+            await _hubContext.Clients.Group($"Post_{id}").SendAsync("ReceivePostEdit", comentarioId, comentario.Description);
+
             return RedirectToPage(new { id = id });
         }
 
@@ -159,6 +166,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             _context.PostComments.Remove(comentario);
             await _context.SaveChangesAsync();
 
+            await _hubContext.Clients.Group($"Post_{id}").SendAsync("ReceiveCommentDelete", comentarioId);
             // Faz refresh à própria página de detalhes
             return RedirectToPage(new { id = id });
         }
@@ -200,6 +208,12 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             }
 
             await _context.SaveChangesAsync();
+
+            //Variavel que guarda o total de likes para enviar no SignalR
+            int totalLikes = await _context.Likes.CountAsync(l => l.PostFK == id);
+
+            //Enviar a atualização no numero de likes para o grupo pelo signalR
+            await _hubContext.Clients.Group($"Post_{id}").SendAsync("ReceivePostLikeUpdate", totalLikes);
 
             // Faz refresh à página de detalhes do post
             return RedirectToPage(new { id = id });
@@ -254,6 +268,14 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             // 4. Guardar na Base de Dados
             _context.PostComments.Add(comentarioParaGravar);
             await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.Group($"Post_{id}").SendAsync(
+                   "ReceivePostUpdate",
+                   myUser.Name,
+                   myUser.Photo ?? "No-profile-photo.jpg",
+                   comentarioParaGravar.Description,
+                   DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                );
 
             // Faz redirect para o GET da própria página para limpar o input do formulário
             return RedirectToPage(new { id = id });
