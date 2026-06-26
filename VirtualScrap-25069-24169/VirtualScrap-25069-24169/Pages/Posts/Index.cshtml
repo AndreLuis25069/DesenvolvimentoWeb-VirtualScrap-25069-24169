@@ -4,7 +4,7 @@
 @inject UserManager<IdentityUser> UserManager
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Mercado da Comunidade";
 }
 
 <div class="container my-4">
@@ -12,7 +12,10 @@
         <div>
             <h1 class="h3 text-dark fw-bold mb-0">🏪 Mercado da Comunidade</h1>
             <p class="text-muted small mb-0">
-                <a asp-page="Create" class="btn btn-sm btn-dark mt-2 rounded-pill px-3">Criar novo anúncio</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-page="Create" class="btn btn-sm btn-dark mt-2 rounded-pill px-3">Criar novo anúncio</a>
+                }   
             </p>
         </div>
 
@@ -95,7 +98,18 @@
                             </div>
                             <div class="row g-0">
                                 <div class="col-12 text-start text-truncate">
-                                    <span> 👨‍🦱 @(string.IsNullOrEmpty(item.PostOwner.Name) ? "Owner" : item.PostOwner.Name)</span>
+                                        <span>
+                                            @if (item.PostOwner != null)
+                                            {
+                                                <a asp-page="/MyUsers/Details" asp-route-id="@item.PostOwner.Id" class="text-decoration-none fw-medium hover-dark transition" style="color: #6c757d;">
+                                                    @(string.IsNullOrEmpty(item.PostOwner.Name) ? "Owner" : item.PostOwner.Name)
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted fst-italic">Utilizador Removido</span>
+                                            }
+                                        </span>
                                 </div>
                             </div>
                         </div>
