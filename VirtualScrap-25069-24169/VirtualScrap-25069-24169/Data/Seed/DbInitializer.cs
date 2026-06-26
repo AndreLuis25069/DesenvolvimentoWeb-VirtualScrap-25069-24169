@@ -15,8 +15,8 @@ namespace VirtualScrap_25069_24169.Data.Seed
         {
             ArgumentNullException.ThrowIfNull(dbContext, nameof(dbContext));
 
-            // Garantir que a base de dados é existente
-            dbContext.Database.EnsureCreated();
+            // Aplica de forma automática as migrations em falta na base de dados (Local ou Azure)
+            await dbContext.Database.MigrateAsync();
 
             bool thereIsInsert = false;
 
