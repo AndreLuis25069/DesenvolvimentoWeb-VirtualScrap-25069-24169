@@ -36,9 +36,18 @@
         <div class="col-12 col-md-6 d-flex flex-column justify-content-between">
             <div>
                 <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="badge bg-light text-secondary border text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">
-                        @Model.Post.PostCategory.Name
-                    </span>
+                    @if (Model.Post.CategoryFK != null)
+                    {
+                        <span class="badge bg-light text-secondary border text-uppercase" style="font-size: 0.6rem;">
+                            @Model.Post.PostCategory.Name
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle text-uppercase" style="font-size: 0.6rem;" title="A categoria original foi eliminada.">
+                            ⚠️ Categoria Removida
+                        </span>
+                    }
 
                     @if (User.Identity.IsAuthenticated)
                     {
@@ -73,7 +82,7 @@
                 <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-2">
                     <h1 class="h3 text-dark fw-bold m-0 flex-grow-1">@Model.Post.Title</h1>
                     <div class="bg-dark text-white px-3 py-1.5 rounded-pill shadow-sm fw-bold fs-5">
-                        € @Model.Post.Price.ToString("F2")
+                        € @Model.Post.Price.ToString("F2") /KG
                     </div>
                 </div>
 

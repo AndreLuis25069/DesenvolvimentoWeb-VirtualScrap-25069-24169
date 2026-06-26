@@ -4,7 +4,136 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="py-5 bg-dark text-white position-relative overflow-hidden" style="min-height: 85vh; display: flex; align-items: center;">
+
+    <div class="position-absolute top-50 start-50 translate-middle opacity-25" style="font-size: 25rem; pointer-events: none; z-index: 1;">
+        ♻️
+    </div>
+
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+                <span class="badge bg-success text-uppercase mb-3 px-3 py-2 rounded-pill fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
+                    🌱 O Futuro da Reciclagem Inteligente
+                </span>
+                <h1 class="display-4 fw-extrabold mb-3 text-white">
+                    Transforma o teu Desperdício em <span class="text-success text-gradient fw-bold">Valor Real</span>
+                </h1>
+                <p class="lead text-white mb-4" style="font-size: 1.1rem; ">
+                    O <strong class="text-white">VirtualScrap</strong> une empresas, particulares e centros de reciclagem numa plataforma ágil. Vende a tua sucata ou compra matérias-primas secundárias ao melhor preço do mercado.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-page="/Posts/Index" class="btn btn-lg btn-success px-4 py-3 fw-medium rounded-pill shadow">
+                        📦 Explorar Anúncios
+                    </a>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-page="/Posts/Create" class="btn btn-lg btn-outline-light px-4 py-3 fw-medium rounded-pill">
+                            ➕ Publicar Material
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <div class="card border-0 rounded-4 shadow-lg mx-auto d-flex align-items-center justify-content-center"
+                     style="max-width: 480px; height: 350px; background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15) !important; backdrop-filter: blur(10px);">
+
+                    <div class="text-center p-4">
+                        <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm fs-2" style="width: 65px; height: 65px; background-color: rgba(0,0,0,0.3) !important;">
+                            🏗️
+                        </div>
+                        <h4 class="fw-bold text-white mb-2">Mercado Digital Conectado</h4>
+                        <p class="text-white-50 small mb-0 px-4" style="font-size: 0.9rem; line-height: 1.5;">
+                            Metais, componentes eletrónicos, plástico e muito mais à distância de um clique.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="py-4 bg-light border-bottom border-light-subtle">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3">
+                <h3 class="fw-bold text-dark mb-0">+15k</h3>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem;">Toneladas Transacionadas</small>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="fw-bold text-dark mb-0">+2,500</h3>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem;">Membros Ativos</small>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="fw-bold text-dark mb-0">100%</h3>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem;">Processo Seguro</small>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="fw-bold text-dark mb-0">0€</h3>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.7rem;">Taxas de Inscrição</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-white">
+    <div class="container my-4" style="max-width: 1000px;">
+        <div class="text-center mb-5">
+            <span class="badge bg-dark text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.5px;">Simplicidade</span>
+            <h2 class="fw-bold text-dark">Como funciona o VirtualScrap?</h2>
+            <p class="text-muted small">Negociar sucata nunca foi tão limpo e descomplicado.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 bg-light p-4 h-100 rounded-3 shadow-sm text-center">
+                    <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 50px; height: 50px;">
+                        📸
+                    </div>
+                    <h5 class="fw-bold text-dark h6">1. Publica o Material</h5>
+                    <p class="text-muted small mb-0">Tira uma foto, define o peso, a localização, a categoria e o preço pretendido por quilo ou lote.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 bg-light p-4 h-100 rounded-3 shadow-sm text-center">
+                    <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 50px; height: 50px;">
+                        💬
+                    </div>
+                    <h5 class="fw-bold text-dark h6">2. Negoceia Direto</h5>
+                    <p class="text-muted small mb-0">Interessados entram em contacto através do telefone ou chat. Sem intermediários a comer margens.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 bg-light p-4 h-100 rounded-3 shadow-sm text-center">
+                    <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 50px; height: 50px;">
+                        🚚
+                    </div>
+                    <h5 class="fw-bold text-dark h6">3. Fecha o Negócio</h5>
+                    <p class="text-muted small mb-0">Combina a recolha ou entrega do material e recebe o pagamento de forma rápida e segura.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <section class="py-5 bg-light text-center border-top border-light-subtle">
+        <div class="container my-3" style="max-width: 700px;">
+            <h2 class="h3 text-dark fw-bold mb-3">Pronto para limpar o armazém e faturar?</h2>
+            <p class="text-muted small mb-4 px-md-5">
+                Cria uma conta em menos de um minuto e junta-te à maior rede digital de economia circular e gestão de resíduos.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-sm btn-dark px-4 fw-medium rounded-pill shadow-sm py-2">
+                    Começar Agora Grátis
+                </a>
+            </div>
+        </div>
+    </section>
+}

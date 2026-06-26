@@ -93,7 +93,7 @@ namespace VirtualScrap_25069_24169.Pages.Posts
             var postComments = await _context.PostComments
                 .Where(c => c.PostFK == post.Id)
                 .ToListAsync();
-
+            _context.PostComments.RemoveRange(postComments);
             //Se passou na validação, então sim, remove-se da base de dados
             Post = post;
             _context.Posts.Remove(Post);

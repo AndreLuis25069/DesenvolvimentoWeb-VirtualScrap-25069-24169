@@ -167,23 +167,16 @@
 
                             <div class="d-flex gap-2 align-items-start">
 
-                                @if (comment.AutorFK != null && comment.Autor != null && !string.IsNullOrEmpty(comment.Autor.Photo))
-                                {
-                                    <img src="~/images1/@comment.Autor.Photo" alt="Foto" class="rounded-circle object-fit-cover" style="width: 36px; height: 36px;" />
-                                }
-                                else
-                                {
-                                    <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.8rem;">
-                                        @if (comment.AutorFK == null)
+                                    <div style="width: 36px; height: 36px; flex-shrink: 0;">
+                                        @if (comment.AutorFK != null && comment.Autor != null && !string.IsNullOrEmpty(comment.Autor.Photo) && comment.Autor.Photo != "noImage.jpg")
                                         {
-                                            <span>X</span>
+                                            <img src="~/images1/@comment.Autor.Photo" alt="Foto de Perfil" class="rounded-circle object-fit-cover w-100 h-100" asp-append-version="true" />
                                         }
                                         else
                                         {
-                                            @comment.Autor.Name.Substring(0, 1).ToUpper()
+                                            <img src="~/defaultProfileImage/No-profile-photo.jpg" alt="Perfil Padrão" class="rounded-circle object-fit-cover w-100 h-100" asp-append-version="true" />
                                         }
                                     </div>
-                                }
 
                                 <div class="bg-light p-3 rounded-3 w-100" style="border-top-left-radius: 0px !important;">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
