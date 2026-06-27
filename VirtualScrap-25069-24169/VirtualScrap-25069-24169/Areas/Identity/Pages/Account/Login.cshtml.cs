@@ -144,7 +144,7 @@ namespace VirtualScrap_25069_24169.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Tentativa de iniciar sessão deu erro.");
                     return Page();
                 }
             }

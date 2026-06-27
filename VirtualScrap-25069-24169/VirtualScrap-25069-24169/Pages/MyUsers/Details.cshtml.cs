@@ -195,6 +195,7 @@ namespace VirtualScrap_25069_24169.Pages.MyUsers
                     myUserId,
                     Comment.Id
                 );
+                return RedirectToPage(new { id = id });
 
                 // Recarrega o perfil atualizado para o utilizador ver o seu comentário na lista
                 MyUser = await _context.MyUsers

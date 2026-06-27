@@ -122,7 +122,14 @@ namespace VirtualScrap_25069_24169.Pages.Posts
 
                 if (decimal.TryParse(precoFormatado, out decimal precoConvertido))
                 {
-                    Post.Price = precoConvertido; 
+                    if (precoConvertido != postOriginal.Price)
+                    {
+                        Post.Price = precoConvertido;
+                    }
+                    else
+                    {
+                        Post.Price = postOriginal.Price;
+                    }
                 }
             }
             else
