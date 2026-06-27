@@ -64,15 +64,15 @@ namespace VirtualScrap_25069_24169.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Campo obrigatório!")]
+            [EmailAddress(ErrorMessage = "E-mail inválido!")]
             public string Email { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Campo obrigatório!")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
