@@ -7,6 +7,10 @@ using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
 using VirtualScrap_25069_24169.Hubs;
 
+// Forçar o .NET a falar português (Ajuda a forçar a azure a comunicar em português também)
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = new System.Globalization.CultureInfo("pt-PT");
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = new System.Globalization.CultureInfo("pt-PT");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
