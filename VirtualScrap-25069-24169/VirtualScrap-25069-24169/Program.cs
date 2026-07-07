@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model;
 using VirtualScrap_25069_24169.Hubs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 // Forçar o .NET a falar português (Ajuda a forçar a azure a comunicar em português também)
 System.Globalization.CultureInfo.DefaultThreadCurrentCulture = new System.Globalization.CultureInfo("pt-PT");
@@ -18,6 +21,10 @@ builder.Services.AddRazorPages();
 
 //Adiciona o suporte para o SignalR
 builder.Services.AddSignalR();
+
+
+//Mapeamento dos controllers para a API
+builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -46,6 +53,23 @@ builder.Services.AddSession(options => {
 });
 builder.Services.AddDistributedMemoryCache();
 
+// --- CONFIGURAÇÃO DO LEITOR DE TOKENS JWT (BEARER) ---
+builder.Services.AddAuthentication()
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "")
+            )
+        };
+    });
+
 
 var app = builder.Build();
 
@@ -66,6 +90,7 @@ app.UseRouting();
 // na segunda secção, adicionar para
 // começar a usar, realmente, os 'cookies'
 app.UseSession();
+
 app.UseAuthorization();
 
 //Adicionar o mapeamento do SignalRHub para a rota "/signalRHub"
@@ -92,5 +117,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+//Correr o AddControllers() para o mapeamento dos controllers
+app.MapControllers();
 
 app.Run();
