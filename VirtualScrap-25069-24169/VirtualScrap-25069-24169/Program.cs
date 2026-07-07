@@ -19,6 +19,10 @@ builder.Services.AddRazorPages();
 //Adiciona o suporte para o SignalR
 builder.Services.AddSignalR();
 
+
+//Mapeamento dos controllers para a API
+builder.Services.AddControllers();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -92,5 +96,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+//Correr o AddControllers() para o mapeamento dos controllers
+app.MapControllers();
 
 app.Run();
