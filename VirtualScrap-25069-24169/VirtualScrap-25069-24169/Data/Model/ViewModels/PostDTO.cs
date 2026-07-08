@@ -4,6 +4,8 @@ namespace VirtualScrap_25069_24169.Models.ViewModels
 {
     public class PostDTO
     {
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "O Título é de preenchimento obrigatório!")]
         [StringLength(50)]
         public string Title { get; set; } = "";
