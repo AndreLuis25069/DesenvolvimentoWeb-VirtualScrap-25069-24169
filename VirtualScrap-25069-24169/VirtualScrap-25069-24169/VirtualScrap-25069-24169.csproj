@@ -37,4 +37,9 @@
     <PackageReference Include="NuGet.Protocol" Version="7.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images1\" />
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 </Project>

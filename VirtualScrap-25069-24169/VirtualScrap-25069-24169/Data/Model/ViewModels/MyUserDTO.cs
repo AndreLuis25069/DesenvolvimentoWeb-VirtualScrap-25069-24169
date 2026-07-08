@@ -15,12 +15,12 @@ namespace VirtualScrap_25069_24169.Models.ViewModels
         [RegularExpression(@"\+?[0-9]{9,18}", ErrorMessage = "O Numero de Telefone do Utilizador não respeita o formato desejado ex:914567899.")]
         public string CellPhone { get; set; } = "";
 
-        [Required(ErrorMessage = "O email do Utilizador é de preenchimento obrigatório.")]
-        [EmailAddress(ErrorMessage = "Introduza um email válido!")]
+        
+        
         [StringLength(100,ErrorMessage = "O email não pode ter mais de 100 caracteres.")]
         public string email { get; set; } = "";
 
-        [Required(ErrorMessage = "A password do Utilizador é de preenchimento obrigatório.")]
+        
         [StringLength(100, ErrorMessage = "A password não pode ter mais de 100 caracteres.")]
         public string password { get; set; } = "";
 

@@ -45,22 +45,23 @@ namespace VirtualScrap_25069_24169.Controllers.API
             var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
             if (!result.Succeeded) return Unauthorized();
 
-            // ⚠️ CORREÇÃO 1: Ir buscar as Roles reais deste user à DB antes de gerar o token
+            // Ir buscar as Roles reais deste user à DB antes de gerar o token
             var roles = await _userManager.GetRolesAsync(user);
 
             // Se as credenciais estiverem certas, gera o Token de Acesso passando o username E as roles
-            var token = GenerateJwtToken(login.Username, roles);
+            var token = GenerateJwtToken(login.Username,user.Id, roles);
 
             // Devolve o token num objeto JSON
             return Ok(new { token });
         }
 
-        // ⚠️ CORREÇÃO 2: O método agora aceita a lista de roles que veio do Login
-        private string GenerateJwtToken(string username, IList<string> roles)
+        //O método agora aceita a lista de roles que veio do Login
+        private string GenerateJwtToken(string username,string userId, IList<string> roles)
         {
-            // ⚠️ CORREÇÃO 3: Mudou de Array Fixo para List<Claim> para o .Add() funcionar!
+            // Mudou de Array Fixo para List<Claim> para o .Add() funcionar!
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, username)
             };
 
