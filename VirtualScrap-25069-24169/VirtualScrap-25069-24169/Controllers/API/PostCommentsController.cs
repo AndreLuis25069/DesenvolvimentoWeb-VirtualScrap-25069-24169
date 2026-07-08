@@ -23,6 +23,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             _userManager = userManager;
         }
 
+        //Endpoint para fazer get aos posts inseridos na base de dados
         // GET: api/PostComments ou api/PostComments?postId=12
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -55,6 +56,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(comments);
         }
 
+        //Endpoint para inserir um comentário num post
         // POST: api/PostComments
         [HttpPost]
         public async Task<IActionResult> CreatePostComment([FromBody] PostCommentDTO dto)
@@ -93,6 +95,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return CreatedAtAction(nameof(GetPostComments), new { postId = postComment.PostFK }, dto);
         }
 
+        //Endpoint para eliminar um comentário de um post
         // DELETE: api/PostComments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePostComment(int id)
@@ -116,21 +119,22 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(new { message = "Comentário do anúncio removido com sucesso!" });
         }
 
+        //Endpoint para editar um comentario de um post
         // PUT: api/PostComments/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePostComment(int id, [FromBody] PostCommentDTO dto)
         {
-            // 1. Validar coerência de IDs
+            // Validar coerência de IDs
             if (id != dto.Id)
                 return BadRequest("O ID enviado no URL não coincide com o ID do corpo do pedido.");
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // 2. Procurar o comentário do anúncio
+            // Procurar o comentário do anúncio
             var postComment = await _context.PostComments.FindAsync(id);
             if (postComment == null) return NotFound("Comentário do anúncio não encontrado.");
 
-            // 3. SEGURANÇA CRUCIAL: Identificar o autor através do Token JWT
+            // Identificar o autor através do bearer Token JWT
             var identityEmail = User.Identity?.Name;
             var identityUser = await _userManager.FindByEmailAsync(identityEmail ?? "");
             var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUser!.Id);
@@ -140,10 +144,11 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
             if (!isAdmin && !isOwner)
             {
-                return Forbid(); // 403 Forbidden se for outro utilizador qualquer
+                // 403 Forbidden se for outro utilizador diferente
+                return Forbid(); 
             }
 
-            // 5. Atualizar a descrição do comentário
+            // Atualizar a descrição do comentário
             postComment.Description = dto.Description;
 
             _context.Entry(postComment).State = EntityState.Modified;

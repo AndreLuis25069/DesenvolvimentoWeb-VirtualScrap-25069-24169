@@ -18,6 +18,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
         private readonly ApplicationDbContext _context;
         // Injetamos o UserManager para conseguir criar/remover na tabela AspNetUsers
         private readonly UserManager<IdentityUser> _userManager;
+        //Injetar o WebHostEnvironment para mexer com a wwwroot
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public UsersApiController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment webHostEnvironment)
@@ -27,12 +28,13 @@ namespace VirtualScrap_25069_24169.Controllers.API
             _webHostEnvironment = webHostEnvironment;
         }
 
+        //Endpoint para carregar todos os users da base de dados 
         // GET: api/UsersApi
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<MyUserDTO>>> GetUsers()
         {
-            var users = await _context.MyUsers // Ajustado para MyUsers conforme o teu DbContext
+            var users = await _context.MyUsers // Ajustado para MyUsers conforme o  DbContext
                                       .Where(u => !u.IsDeleted)
                                       .Select(u => new MyUserDTO
                                       {
@@ -45,6 +47,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return users;
         }
 
+        //Endpoint para retornar os dados de um user escolhido
         // GET: api/UsersApi/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MyUserDTO>> GetUser(int id)
@@ -64,6 +67,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return user;
         }
 
+
+        //Endpoint para editar um dado utilizador da BD
         // PUT: api/UsersApi/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, MyUserDTO userDto)
@@ -112,6 +117,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             });
         }
 
+        //Endpoint para criar utilizadores atraves de um body JSON
         // POST: api/UsersApi
         [HttpPost]
         [AllowAnonymous] // O registo de novos utilizadores tem de ser público (sem exigir token JWT)
@@ -122,7 +128,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
             {
                 UserName = userDto.email,
                 Email = userDto.email,
-                EmailConfirmed = true // Garante que a conta fica logo ativa para fazer login
+                // Garante que a conta fica logo ativa para fazer login
+                EmailConfirmed = true 
             };
 
             //O UserManager valida as regras da password e faz o Hash de forma segura automaticamente
@@ -130,18 +137,19 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
             if (!identityResult.Succeeded)
             {
-                //Se a password for fraca ou o email já existir, devolvemos os erros nativos do Identity
+                //Se a password for fraca ou o email já existir, devolve os erros nativos do Identity
                 return BadRequest(identityResult.Errors);
             }
 
-            //Criar o perfil com os 4 campos correspondentes na tua tabela MyUsers
+            //Criar o perfil com os 4 campos correspondentes na  tabela MyUsers
             MyUser newUser = new()
             {
                 Name = userDto.Name,
                 CellPhone = userDto.CellPhone,
                 Photo = "noImage.jpg",
-                IsDeleted = false, // Conta nova entra sempre ativa
-                IdUser = identityUser.Id // AQUI APONTAMOS PARA O GUID GERADO NO STEP 1!
+                // Conta nova entra sempre ativa
+                IsDeleted = false, 
+                IdUser = identityUser.Id
             };
 
             try
@@ -151,13 +159,13 @@ namespace VirtualScrap_25069_24169.Controllers.API
             }
             catch (Exception)
             {
-                // Mecanismo de Segurança (Rollback): Se a gravação na tua tabela MyUsers falhar por algum motivo,
-                // eliminamos o utilizador que criámos no Step 1 para não deixar lixo desemparelhado na BD!
+                //Se a gravação dtabela MyUsers falhar por algum motivo,
+                //eliminamos o utilizador que criámos no Step 1 para não deixar lixo desemparelhado na BD
                 await _userManager.DeleteAsync(identityUser);
                 return BadRequest();
             }
 
-            //Projetar o DTO de retorno limpo (omitindo a password por questões de segurança!)
+            //Projetar o DTO de retorno limpo (omitindo a password por questões de segurança)
             var returnDto = new MyUserDTO
             {
                 Id = newUser.Id,
@@ -172,6 +180,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
         }
 
         
+        //Endpoint para eliminar um utilizador escolhido
         // DELETE: api/UsersApi/5 -> Eliminação de utilizador em ambas as tabelas AspNetUsers e MyUsers
         
         [HttpDelete("{id}")]
@@ -181,7 +190,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             //Carrega o Utilizador que tem sessão iniciada, registado no token e verfifica e guarda o role do proprio 
             var userLoggado = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = User.IsInRole("Admin");
-            //Procurar o perfil do utilizador na tua tabela MyUsers
+            //Procurar o perfil do utilizador na  tabela MyUsers
             var user = await _context.MyUsers.FindAsync(id);
             if (user == null) return NotFound(new{mensagem = "O utilizador especificado não foi encontrado." });
 

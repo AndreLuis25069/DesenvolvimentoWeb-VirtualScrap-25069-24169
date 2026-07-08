@@ -25,6 +25,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
             _userManager = userManager;
         }
 
+
+        //Endpoint para carregar um dado comentario
         // GET: api/Comments ou api/Comments?recipientId=3
         [HttpGet]
         public async Task<IActionResult> GetComments([FromQuery] int? recipientId)
@@ -45,10 +47,12 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 .Select(c => new CommentDTO
                 {
                     Id = c.Id,
+                    //Recebe o corpo da avaliação
                     Description = c.Description,
                     CommentDate = c.CommentDate,
                     AutorFK = c.AutorFK,
                     RecipientFK = c.RecipientFK,
+                    //Numero de estrelas da avaliação
                     Rating = c.Rating,
                     AutorName = c.Autor != null ? c.Autor.Name : "Utilizador Anónimo",
                     RecipientName = c.Recipient != null ? c.Recipient.Name : "Desconhecido"
@@ -58,13 +62,14 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(comments);
         }
 
+        //Endpoint para criar um comentario com corpo JSON
         // POST: api/Comments
         [HttpPost]
         public async Task<IActionResult> CreateComment([FromBody] CommentDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // Buscar o email do utilizador atual a partir das Claims do Token JWT
+            // Carregar o email do utilizador atual a partir das Claims do Token JWT
             var identityEmail = User.Identity?.Name;
             if (string.IsNullOrEmpty(identityEmail)) return Unauthorized();
 
@@ -75,7 +80,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUser.Id);
             if (myUser == null) return BadRequest("Perfil de utilizador não encontrado no sistema.");
 
-            //Impede que um user faça um comentário no seu proprio perfil
+            //Impede que um utilizador faça um comentário no seu proprio perfil
             if (myUser.Id == dto.RecipientFK)
             {
                 return BadRequest("Não podes deixar uma avaliação ou comentário no teu próprio perfil, rei!");
@@ -90,7 +95,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
             {
                 Description = dto.Description,
                 CommentDate = DateTime.Now,
-                AutorFK = myUser.Id, // Injetado automaticamente por segurança via Token
+                // Injetado automaticamente por segurança via Token
+                AutorFK = myUser.Id, 
                 RecipientFK = dto.RecipientFK,
                 Rating = dto.Rating
             };
@@ -106,6 +112,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return CreatedAtAction(nameof(GetComments), new { recipientId = comment.RecipientFK }, dto);
         }
 
+
+        //Endpoint para a edição de um utilizador 
         // PUT: api/Comments/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateComment(int id, [FromBody] CommentDTO dto)
@@ -123,13 +131,14 @@ namespace VirtualScrap_25069_24169.Controllers.API
             var identityUser = await _userManager.FindByEmailAsync(identityEmail ?? "");
             var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUser!.Id);
 
-            // REGRA DE SEGURANÇA: Apenas o Admin OU o próprio Autor podem atualizar
+            // Apenas o Admin OU o próprio Autor da avaliação podem atualizar
             bool isAdmin = User.IsInRole("Admin");
             bool isOwner = comment.AutorFK == myUser?.Id;
 
+            // Retorna 403 Forbidden se for outro utilizador
             if (!isAdmin && !isOwner)
             {
-                return Forbid(); // Retorna 403 Forbidden se for outro utilizador
+                return Forbid(); 
             }
 
             // Atualizar os campos permitidos
@@ -142,6 +151,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(new { message = "Avaliação atualizada com sucesso!", comment = dto });
         }
 
+        //Endpoint para efetuar a remoção de uma dada avaliação
         // DELETE: api/Comments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(int id)
@@ -154,13 +164,13 @@ namespace VirtualScrap_25069_24169.Controllers.API
             var identityUser = await _userManager.FindByEmailAsync(identityEmail ?? "");
             var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUser!.Id);
 
-            // REGRA DE SEGURANÇA: Apenas o Admin OU o próprio Autor podem apagar
+            //Apenas um Admin OU o próprio Autor podem apagar
             bool isAdmin = User.IsInRole("Admin");
             bool isOwner = comment.AutorFK == myUser?.Id;
 
             if (!isAdmin && !isOwner)
             {
-                return Forbid(); // Retorna 403 Forbidden
+                return Forbid(); 
             }
 
             _context.Comments.Remove(comment);

@@ -20,6 +20,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             _context = context;
         }
 
+        //Endpoint que vai buscar todas as categorias
         // GET: api/Categories
         // Aberto ao público para que todos possam filtrar anúncios por categoria
         [AllowAnonymous]
@@ -38,6 +39,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(categories);
         }
 
+        //Endpoint para ir buscar a categoria pelo ID 
         // GET: api/Categories/5
         [AllowAnonymous]
         [HttpGet("{id}")]
@@ -55,15 +57,16 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(dto);
         }
 
+        //Endpoint para criar uma nova categoria 
         // POST: api/Categories
-        // TRANCA DE SEGURANÇA: Só o Administrador do sistema pode criar novas categorias
+        // So é possivel criar categorias se o utilizador que está no token de autenticação for adminstrador 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CategorySimplerDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // Validação extra: Impedir categorias com nomes duplicados
+            //Não deixa criar categorias com nomes duplicados
             var exists = await _context.Categories
                 .AnyAsync(c => c.Name.ToLower() == dto.Name.ToLower());
 
@@ -77,7 +80,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            // Mapeia para o DTO de leitura completo para responder ao cliente
+            // Mapeia para o DTO de leitura completa para dar resposta ao cliente
             var resultDto = new CategoryDTO
             {
                 Id = category.Id,
@@ -87,8 +90,9 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, resultDto);
         }
 
+        //Endpoint para atualizar o nome de uma dada categoria.
         // PUT: api/Categories/5
-        // TRANCA DE SEGURANÇA: Só o Administrador pode renomear categorias
+        //Só o Administrador pode mudar o nome das categorias
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategorySimplerDTO dto)
@@ -113,8 +117,9 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(new { message = "Categoria atualizada com sucesso!", category = new CategoryDTO { Id = category.Id, Name = category.Name } });
         }
 
+        //EndPoint para eliminar uma categoria
         // DELETE: api/Categories/5
-        // TRANCA DE SEGURANÇA: Só o Administrador pode apagar categorias
+        // Só um Administrador pode apagar categorias
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)

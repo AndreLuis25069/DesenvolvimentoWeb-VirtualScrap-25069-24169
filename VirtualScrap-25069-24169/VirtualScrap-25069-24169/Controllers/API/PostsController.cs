@@ -16,17 +16,19 @@ namespace VirtualScrap_25069_24169.Controllers.API
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public PostsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public PostsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userManager = userManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
+
+        //Da fetch de todos os posts existentes na base de dados.
         // GET: api/Posts
-        // Nota: Deixei [AllowAnonymous] aqui para que qualquer pessoa (mesmo deslogada) possa ver os anúncios do site. 
-        // Se quiseres que só utilizadores logados vejam, basta apagar a linha [AllowAnonymous].
-        [AllowAnonymous]
+         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetPosts()
         {
@@ -44,7 +46,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                     Photo = p.Photo,
                     Price = p.Price,
                     Localizacao = p.Localizacao,
-                    // Assumindo que a tua classe Category tem a propriedade .Name (ou .Designacao)
+                    // Assumindo que a classe Category tem a propriedade .Name (ou .Designacao)
                     CategoryName = p.PostCategory != null ? p.PostCategory.Name : "Sem Categoria",
                     OwnerName = p.PostOwner != null ? p.PostOwner.Name : "Utilizador Anónimo"
                 })
@@ -53,6 +55,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(posts);
         }
 
+        //Vai buscar á base de dados um post com determinado ID
         // GET: api/Posts/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPost(int id)
@@ -81,13 +84,14 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(dto);
         }
 
+        //Endpoint para criar posts 
         // POST: api/Posts
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] PostDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // Descobrir o MyUser logado através do Token JWT
+            // Descobrir o user do tipo MyUser logado através do  bearer Token JWT 
             var identityEmail = User.Identity?.Name;
             if (string.IsNullOrEmpty(identityEmail)) return Unauthorized();
 
@@ -106,12 +110,14 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 Title = dto.Title,
                 Description = dto.Description,
                 CellPhone = dto.CellPhone,
-                PostDate = DateTime.Now, // Data gerada no servidor
+                // Data gerada no servidor
+                PostDate = DateTime.Now, 
                 Photo = string.IsNullOrEmpty(dto.Photo) ? "default_post.jpg" : dto.Photo,
                 Price = dto.Price,
                 Localizacao = dto.Localizacao,
                 CategoryFK = category.Id,
-                OwnerFK = myUser.Id // Vinculado de forma segura ao dono do Token
+                // Vinculado de forma segura ao dono do Token
+                OwnerFK = myUser.Id 
             };
 
             _context.Posts.Add(post);
@@ -125,6 +131,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return CreatedAtAction(nameof(GetPost), new { id = post.Id }, dto);
         }
 
+        //Endpoint para editar um determinado post
         // PUT: api/Posts/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePost(int id, [FromBody] PostDTO dto)
@@ -143,9 +150,10 @@ namespace VirtualScrap_25069_24169.Controllers.API
             bool isAdmin = User.IsInRole("Admin");
             bool isOwner = post.OwnerFK == myUser?.Id;
 
-            if (!isAdmin && !isOwner) return Forbid(); // 403 Se não for o dono ou admin
+            // Erro 403 Se não for o dono ou admin
+            if (!isAdmin && !isOwner) return Forbid(); 
 
-            // Validar se a nova categoria enviada existe
+            // Valida se a nova categoria enviada existe
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.CategoryName);
             if (category == null) return BadRequest($"A categoria '{dto.CategoryName}' não existe.");
 
@@ -166,11 +174,13 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(new { message = "Anúncio atualizado com sucesso!", post = dto });
         }
 
+
+        //Endpoint para eliminar um dado post 
         // DELETE: api/Posts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
-            // Carrega o Post incluindo os Comentários e os Likes para aplicar a regra Cascade via código
+            // Carrega o Post incluindo os Comentários e os Likes para aplicar a regra do OnDelete Cascade manual
             var post = await _context.Posts
                 .Include(p => p.Commentaries)
                 .Include(p => p.LikesList)
@@ -178,7 +188,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
             if (post == null) return NotFound("Anúncio não encontrado.");
 
-            // Validar se quem elimina é o Dono ou Admin
+            // Validar se quem elimina é o Dono do post ou um Admin
             var identityEmail = User.Identity?.Name;
             var identityUser = await _userManager.FindByEmailAsync(identityEmail ?? "");
             var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUser!.Id);
@@ -188,7 +198,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
             if (!isAdmin && !isOwner) return Forbid();
 
-            // 💥 REGRA CASCADE MANUAL (Garante a limpeza total dos filhos na Base de Dados)
+            //OnDelete CASCADE manual (Garante a limpeza total dos likes e comentarios do post na Base de Dados)
             if (post.Commentaries != null && post.Commentaries.Any())
             {
                 _context.PostComments.RemoveRange(post.Commentaries);
@@ -200,11 +210,22 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 _context.Likes.RemoveRange(post.LikesList);
             }
 
-            // Eliminar o post principal
+            if (!string.IsNullOrEmpty(post.Photo) && post.Photo != "default_post.jpg")
+            {
+                //Caminho para a pasta onde se encontra a imagem
+                string caminhoFotoPost = Path.Combine(_webHostEnvironment.WebRootPath, "images", post.Photo);
+
+                if (System.IO.File.Exists(caminhoFotoPost))
+                {
+                    System.IO.File.Delete(caminhoFotoPost);
+                }
+            }
+
+            // Eliminar o post da base de dados
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Anúncio e todos os seus comentários/likes foram eliminados com sucesso!" });
+            return Ok(new { message = "Anúncio e todos os seus comentários e likes foram eliminados com sucesso!" });
         }
     }
 }

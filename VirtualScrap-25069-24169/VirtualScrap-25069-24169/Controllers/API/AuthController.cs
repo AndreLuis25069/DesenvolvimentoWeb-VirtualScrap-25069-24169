@@ -32,6 +32,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             _config = config;
         }
 
+        //Endpoint para realizar a autenticação
         // POST: api/Auth/login
         [AllowAnonymous]
         [HttpPost("login")]
@@ -45,7 +46,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
             if (!result.Succeeded) return Unauthorized();
 
-            // Ir buscar as Roles reais deste user à DB antes de gerar o token
+            // Ir buscar as Roles reais deste utilizador à base de dados antes de gerar o token
             var roles = await _userManager.GetRolesAsync(user);
 
             // Se as credenciais estiverem certas, gera o Token de Acesso passando o username E as roles
@@ -55,17 +56,17 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(new { token });
         }
 
-        //O método agora aceita a lista de roles que veio do Login
+        //O método  aceita a lista de roles que veio do Login
         private string GenerateJwtToken(string username,string userId, IList<string> roles)
         {
-            // Mudou de Array Fixo para List<Claim> para o .Add() funcionar!
+            // Mudou de Array Fixo para List<Claim> para o .Add() funcionar
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, username)
             };
 
-            // Agora sim, a variável 'roles' existe e as claims vão ser injetadas
+            //  A variável 'roles' já existe e as claims vão ser injetadas
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
