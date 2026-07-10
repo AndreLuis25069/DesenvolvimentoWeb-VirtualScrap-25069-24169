@@ -72,6 +72,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

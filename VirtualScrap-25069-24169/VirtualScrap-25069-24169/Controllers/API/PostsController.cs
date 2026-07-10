@@ -32,6 +32,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
         [HttpGet]
         public async Task<IActionResult> GetPosts()
         {
+            //Estado da sessão para, saber se mostra o numero de telefone(sessão iniciada) ou não
+            bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
             var posts = await _context.Posts
                 .Include(p => p.PostOwner)
                 .Include(p => p.PostCategory)
@@ -41,7 +43,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                     Id = p.Id,
                     Title = p.Title,
                     Description = p.Description,
-                    CellPhone = p.CellPhone,
+                    CellPhone = isAuthenticated ? p.CellPhone : "*********",
                     PostDate = p.PostDate,
                     Photo = p.Photo,
                     Price = p.Price,
@@ -57,9 +59,12 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
         //Vai buscar á base de dados um post com determinado ID
         // GET: api/Posts/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPost(int id)
         {
+            //Estado da sessão para, saber se mostra o numero de telefone(sessão iniciada) ou não
+            bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
             var post = await _context.Posts
                 .Include(p => p.PostOwner)
                 .Include(p => p.PostCategory)
@@ -72,7 +77,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 Id = post.Id,
                 Title = post.Title,
                 Description = post.Description,
-                CellPhone = post.CellPhone,
+                CellPhone = isAuthenticated ? post.CellPhone : "*********",
                 PostDate = post.PostDate,
                 Photo = post.Photo,
                 Price = post.Price,
@@ -180,6 +185,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
+            
             // Carrega o Post incluindo os Comentários e os Likes para aplicar a regra do OnDelete Cascade manual
             var post = await _context.Posts
                 .Include(p => p.Commentaries)
