@@ -29,42 +29,38 @@ namespace VirtualScrap_25069_24169.Controllers.API
         [HttpPost]
         //Apenas pessoas com sessão iniciada podem (ter token) podem inserir um like
         [Authorize]
+        
         public async Task<IActionResult> PostLike([FromBody] LikeDTO likeDto)
         {
             //Carregar o utilizador que está no token
             var userLoggado = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var autor = await _context.MyUsers.FindAsync(likeDto.AutorId);
+            var autorMyUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == userLoggado);
 
-            if (autor == null) {
+            if (autorMyUser == null) {
                 return NotFound(new { Sucesso = false, mensagem = "O utilizador não foi encontrado" });
             }
-
-            if (autor.IdUser != userLoggado)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    new
-                    {
-                        sucesso = false,
-                        mensagem = "Acesso Negado. Não podes dar gosto pois não esta com sessão iniciada"
-                    });
-            }
+            
 
             //Partir para a verificação se o post existe na base de dados
             var post = await _context.Posts.FindAsync(likeDto.PostId);
-            if (post == null) {
-                return NotFound(new { sucesso = false, mensagem = "O post não existe na base de dados" });
+            if (post == null)
+            {
+                return NotFound(new { sucesso = false, mensagem = "Este anuncio não existe na base de dados" });
             }
 
+
             //Verificar se esse like ja existe
-            var likeExiste = await _context.Likes.AnyAsync(l => l.LikeAutorFK == likeDto.AutorId && l.PostFK == likeDto.PostId);
+            var likeExiste = await _context.Likes.AnyAsync(l => l.LikeAutorFK == autorMyUser.Id && l.PostFK == likeDto.PostId);
             if (likeExiste)
             {
                 return BadRequest(new { sucesso = false, mensagem = "O like que estás a tentar inserir já existe na base de dados" });
             }
 
+
+
             var novoLike = new Like
             {
-                LikeAutorFK = likeDto.AutorId,
+                LikeAutorFK = autorMyUser.Id,
                 PostFK = likeDto.PostId
             };
 
@@ -130,7 +126,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
         //DELETE: api/Likes/3/15
         //Delete de um dado Like escolhido
         [HttpDelete("{autorId}/{postId}")]
-        
+        [Authorize]
         public async Task<IActionResult> DeleteLike(int autorId, int postId)
         {
             //Procurar o like usando os dois IDs
@@ -154,11 +150,11 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
             if (!isAdmin && autorDoLike != userLoggado)
             {
-                // 403 Forbidden -> Bloqueio imediato
+               //Mensagem de acesso negado, em caso de utilizador não for Admninistrador ou dono do like
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
                     sucesso = false,
-                    mensagem = "Acesso negado. Apenas o utilizador que deu o gosto ou um Administrador o podem remover."
+                    mensagem = "Acesso negado. Apenas o utilizador que deu o gosto ou um utilizador Administrador o podem remover."
                 });
             }
 
@@ -173,7 +169,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 mensagem = "Like removido com sucesso!"
             });
 
-            return NoContent();
+           
         }
     }
 }

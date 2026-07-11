@@ -27,6 +27,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
         // GET: api/PostComments ou api/PostComments?postId=12
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetPostComments([FromQuery] int? postId)
         {
             var query = _context.PostComments
@@ -34,11 +35,13 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 .Include(pc => pc.CommentedPost)
                 .AsQueryable();
 
+            //Se for passado um ID de anuncio alvo, só os desse são retornados.
             if (postId.HasValue)
             {
                 query = query.Where(pc => pc.PostFK == postId.Value);
             }
 
+            //Caso contrario (parâmetro vazio) mostram-se todos os comentarios existentes
             var comments = await query
                 .OrderByDescending(pc => pc.CommentDate)
                 .Select(pc => new PostCommentDTO
@@ -56,6 +59,39 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(comments);
         }
 
+        //Endpoint para ir buscar um comentário específico (commentId) dentro de um post específico (postId)
+        // GET: api/PostComments/12/5  (Onde 12 é o Post e 5 é o Comentário)
+        [AllowAnonymous]
+        [HttpGet("{postId}/{commentId}")]
+        public async Task<IActionResult> GetSpecificComment(int postId, int commentId)
+        {
+            var postComment = await _context.PostComments
+                .Include(pc => pc.Autor)
+                .Include(pc => pc.CommentedPost)
+                //Os 2 IDs têm de bater certo
+                .FirstOrDefaultAsync(pc => pc.PostFK == postId && pc.Id == commentId);
+
+            if (postComment == null)
+            {
+                return NotFound("O comentário não existe ou não pertence a este anúncio.");
+            }
+
+            var dto = new PostCommentDTO
+            {
+                Id = postComment.Id,
+                Description = postComment.Description,
+                CommentDate = postComment.CommentDate,
+                AutorFK = postComment.AutorFK,
+                PostFK = postComment.PostFK,
+                AutorName = postComment.Autor != null ? postComment.Autor.Name : "Utilizador Anónimo",
+                CommentedPostTitle = postComment.CommentedPost != null ? postComment.CommentedPost.Title : "Anúncio Removido"
+            };
+
+            return Ok(dto);
+        }
+
+
+
         //Endpoint para inserir um comentário num post
         // POST: api/PostComments
         [HttpPost]
@@ -71,7 +107,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             if (identityUser == null) return Unauthorized();
 
             var myUser = await _context.MyUsers.FirstOrDefaultAsync(u => u.IdUser == identityUser.Id);
-            if (myUser == null) return BadRequest("Perfil de utilizador não registado na tabela MyUsers.");
+            if (myUser == null) return BadRequest("O Perfil do utilizador não registado na tabela MyUsers.");
 
             // Validar se o Post de facto existe na base de dados
             var postExists = await _context.Posts.AnyAsync(p => p.Id == dto.PostFK);
@@ -111,7 +147,14 @@ namespace VirtualScrap_25069_24169.Controllers.API
             bool isAdmin = User.IsInRole("Admin");
             bool isOwner = postComment.AutorFK == myUser?.Id;
 
-            if (!isAdmin && !isOwner) return Forbid();
+            if (!isAdmin && !isOwner)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas o autor do comentário ou um utilizador Administrador o podem eliminar."
+                });
+            }
 
             _context.PostComments.Remove(postComment);
             await _context.SaveChangesAsync();
@@ -144,8 +187,11 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
             if (!isAdmin && !isOwner)
             {
-                // 403 Forbidden se for outro utilizador diferente
-                return Forbid(); 
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas o autor do comentário ou um utilizador Administrador o podem editar."
+                });  
             }
 
             // Atualizar a descrição do comentário

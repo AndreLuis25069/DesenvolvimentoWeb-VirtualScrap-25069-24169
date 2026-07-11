@@ -60,10 +60,20 @@ namespace VirtualScrap_25069_24169.Controllers.API
         //Endpoint para criar uma nova categoria 
         // POST: api/Categories
         // So é possivel criar categorias se o utilizador que está no token de autenticação for adminstrador 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CategorySimplerDTO dto)
         {
+            //Verificação se o utilizador é admin, apenas dentro do metodo para conseguir enviar uma mensagem de aviso quando é um utilizador comum a tentar dar POST.
+            bool isAdmin = User.IsInRole("Admin");
+            if (!isAdmin)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas os utilizadores Administradores podem criar novas categorias!"
+                });
+            }
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             //Não deixa criar categorias com nomes duplicados
@@ -93,10 +103,21 @@ namespace VirtualScrap_25069_24169.Controllers.API
         //Endpoint para atualizar o nome de uma dada categoria.
         // PUT: api/Categories/5
         //Só o Administrador pode mudar o nome das categorias
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategorySimplerDTO dto)
         {
+            //Verificação se o utilizador é admin, apenas dentro do metodo para conseguir enviar uma mensagem de aviso quando é um utilizador comum a tentar dar PUT.
+            bool isAdmin = User.IsInRole("Admin");
+            if (!isAdmin)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas os utilizadores Administradores podem editar  categorias!"
+                });
+            }
+
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var category = await _context.Categories.FindAsync(id);
@@ -120,10 +141,20 @@ namespace VirtualScrap_25069_24169.Controllers.API
         //EndPoint para eliminar uma categoria
         // DELETE: api/Categories/5
         // Só um Administrador pode apagar categorias
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
+            //Verificação se o utilizador é admin, apenas dentro do metodo para conseguir enviar uma mensagem de aviso quando é um utilizador comum a tentar dar DELETE.
+            bool isAdmin = User.IsInRole("Admin");
+            if (!isAdmin)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas os utilizadores Administradores podem eliminar categorias."
+                });
+            }
             var category = await _context.Categories.FindAsync(id);
             if (category == null) return NotFound("Categoria não encontrada.");
 

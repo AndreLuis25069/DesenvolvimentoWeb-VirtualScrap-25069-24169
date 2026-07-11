@@ -50,21 +50,27 @@ namespace VirtualScrap_25069_24169.Controllers.API
         //Endpoint para retornar os dados de um user escolhido
         // GET: api/UsersApi/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<MyUserDTO>> GetUser(int id)
         {
+            bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+            //Carrega o utilizador pelo ID de parâmetro
             var user = await _context.MyUsers
-                                     .Where(u => u.Id == id && !u.IsDeleted)
-                                     .Select(u => new MyUserDTO
-                                     {
-                                         Id = u.Id,
-                                         Name = u.Name,
-                                         CellPhone = u.CellPhone,
-                                         Photo = u.Photo
-                                     })
+                                     .Where(u => u.Id == id && !u.IsDeleted) 
                                      .FirstOrDefaultAsync();
 
-            if (user == null) return NotFound();
-            return user;
+            if (user == null) return NotFound("Este utilizador não existe");
+            var dto = new MyUserDTO
+            {
+
+                Id = user.Id,
+                Name = user.Name,
+                CellPhone = isAuthenticated ? user.CellPhone : "*********",
+                
+
+            };
+
+            return Ok(dto);
         }
 
 
@@ -88,7 +94,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new
                 {
-                    mensagem = "Acesso negado. Apenas o próprio utilizador ou um Administrador podem editar este perfil."
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas o próprio utilizador ou um utilizador Administrador podem editar este perfil."
                 });
             }
 
@@ -162,7 +169,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 //Se a gravação dtabela MyUsers falhar por algum motivo,
                 //eliminamos o utilizador que criámos no Step 1 para não deixar lixo desemparelhado na BD
                 await _userManager.DeleteAsync(identityUser);
-                return BadRequest();
+                return BadRequest(new { sucesso = false, mensagem = "Erro interno ao criar o perfil. Por favor, tente novamente." });
             }
 
             //Projetar o DTO de retorno limpo (omitindo a password por questões de segurança)
@@ -184,7 +191,6 @@ namespace VirtualScrap_25069_24169.Controllers.API
         // DELETE: api/UsersApi/5 -> Eliminação de utilizador em ambas as tabelas AspNetUsers e MyUsers
         
         [HttpDelete("{id}")]
-        [Authorize]
         public async Task<IActionResult> DeleteUser(int id)
         {
             //Carrega o Utilizador que tem sessão iniciada, registado no token e verfifica e guarda o role do proprio 
@@ -237,8 +243,8 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 // Constrói o caminho completo até à pasta dos teus anúncios (ajusta o nome da pasta "imagens_anuncios")
                 var caminhoFotoPost = Path.Combine(_webHostEnvironment.WebRootPath, "images", post.Photo);
 
-                // Verifica se o ficheiro existe mesmo no disco antes de tentar apagar para não dar erro
-                if (System.IO.File.Exists(caminhoFotoPost))
+                // Verifica se o ficheiro existe mesmo no disco antes de tentar apagar para não dar erro, e se a foto tem o nome default_post.jpg
+                if (System.IO.File.Exists(caminhoFotoPost) && post.Photo != "default_post.jpg")
                 {
 
                     //Apaga do disco
@@ -288,7 +294,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(new
             {
                 sucesso = true,
-                mensagem = "O utilizador foi elimnado com sucesso e com isso todos os seus comentarios,likes,posts,etc foram removidos com sucesso "
+                mensagem = "O utilizador foi eliminado com sucesso e, com isso, todos os seus comentários, likes e anúncios foram removidos. "
             });
         }
 

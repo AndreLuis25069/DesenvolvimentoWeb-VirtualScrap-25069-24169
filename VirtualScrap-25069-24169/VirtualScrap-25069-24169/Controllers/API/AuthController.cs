@@ -7,7 +7,6 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using VirtualScrap_25069_24169.Data;
 using VirtualScrap_25069_24169.Data.Model.ViewModels;
 
 namespace VirtualScrap_25069_24169.Controllers.API
@@ -16,17 +15,17 @@ namespace VirtualScrap_25069_24169.Controllers.API
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IConfiguration _config;
 
-        public AuthController(ApplicationDbContext context,
+        public AuthController(
            UserManager<IdentityUser> userManager,
            SignInManager<IdentityUser> signInManager,
            IConfiguration config)
         {
-            _context = context;
+            
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
@@ -40,11 +39,21 @@ namespace VirtualScrap_25069_24169.Controllers.API
         {
             // Procura o utilizador pelo Email enviado no campo Username
             var user = await _userManager.FindByEmailAsync(login.Username);
-            if (user == null) return Unauthorized();
+            
+            if (user == null)
+            {
+                // Mostra o porque de não ter sucesso
+                return Unauthorized(new { sucesso = false, mensagem = "Email ou password incorretos." });
+            }
 
             // Valida se a password coincide com o Hash da Base de Dados
             var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
-            if (!result.Succeeded) return Unauthorized();
+            
+            if (!result.Succeeded)
+            {
+               
+                return Unauthorized(new { sucesso = false, mensagem = "Email ou password incorretos." });
+            }
 
             // Ir buscar as Roles reais deste utilizador à base de dados antes de gerar o token
             var roles = await _userManager.GetRolesAsync(user);

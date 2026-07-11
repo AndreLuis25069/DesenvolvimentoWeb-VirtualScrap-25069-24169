@@ -155,8 +155,15 @@ namespace VirtualScrap_25069_24169.Controllers.API
             bool isAdmin = User.IsInRole("Admin");
             bool isOwner = post.OwnerFK == myUser?.Id;
 
-            // Erro 403 Se não for o dono ou admin
-            if (!isAdmin && !isOwner) return Forbid(); 
+            //Se não for dono ou admin dá erro 
+            if (!isAdmin && !isOwner)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas o autor do anúncio ou um utilizador Administrador podem editar este post."
+                });
+            }
 
             // Valida se a nova categoria enviada existe
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.CategoryName);
@@ -202,7 +209,14 @@ namespace VirtualScrap_25069_24169.Controllers.API
             bool isAdmin = User.IsInRole("Admin");
             bool isOwner = post.OwnerFK == myUser?.Id;
 
-            if (!isAdmin && !isOwner) return Forbid();
+            if (!isAdmin && !isOwner)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas o autor do anúncio ou um utilizador Administrador podem eliminar este anuncio."
+                });
+            }
 
             //OnDelete CASCADE manual (Garante a limpeza total dos likes e comentarios do post na Base de Dados)
             if (post.Commentaries != null && post.Commentaries.Any())

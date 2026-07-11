@@ -29,6 +29,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
         //Endpoint para carregar um dado comentario
         // GET: api/Comments ou api/Comments?recipientId=3
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetComments([FromQuery] int? recipientId)
         {
             var query = _context.Comments
@@ -36,7 +37,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 .Include(c => c.Recipient)
                 .AsQueryable();
 
-            // Se passarem o ID do destinatário na query string, filtra automaticamente
+            // Se passar o ID do destinatário na query string, filtra automaticamente
             if (recipientId.HasValue)
             {
                 query = query.Where(c => c.RecipientFK == recipientId.Value);
@@ -62,8 +63,10 @@ namespace VirtualScrap_25069_24169.Controllers.API
             return Ok(comments);
         }
 
+
         //Endpoint para criar um comentario com corpo JSON
         // POST: api/Comments
+        
         [HttpPost]
         public async Task<IActionResult> CreateComment([FromBody] CommentDTO dto)
         {
@@ -83,7 +86,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             //Impede que um utilizador faça um comentário no seu proprio perfil
             if (myUser.Id == dto.RecipientFK)
             {
-                return BadRequest("Não podes deixar uma avaliação ou comentário no teu próprio perfil, rei!");
+                return BadRequest("Não podes deixar uma avaliação ou comentário no teu próprio perfil.");
             }
 
             // Validar se o destinatário da avaliação de facto existe
@@ -138,7 +141,11 @@ namespace VirtualScrap_25069_24169.Controllers.API
             // Retorna 403 Forbidden se for outro utilizador
             if (!isAdmin && !isOwner)
             {
-                return Forbid(); 
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas o autor do comentário ou um utilizador Administrador podem editar este comentário."
+                });
             }
 
             // Atualizar os campos permitidos
@@ -148,7 +155,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             _context.Entry(comment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Avaliação atualizada com sucesso!", comment = dto });
+            return Ok(new { message = "Avaliação atualizada com sucesso.", comment = dto });
         }
 
         //Endpoint para efetuar a remoção de uma dada avaliação
@@ -170,13 +177,17 @@ namespace VirtualScrap_25069_24169.Controllers.API
 
             if (!isAdmin && !isOwner)
             {
-                return Forbid(); 
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    sucesso = false,
+                    mensagem = "Acesso negado. Apenas o autor do comentário ou um utilizador Administrador podem eliminar este comentário."
+                });
             }
 
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Avaliação eliminada com sucesso!" });
+            return Ok(new { message = "Avaliação eliminada com sucesso." });
         }
     }
 }
