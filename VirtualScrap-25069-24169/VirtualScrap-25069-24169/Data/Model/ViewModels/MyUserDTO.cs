@@ -11,7 +11,7 @@ namespace VirtualScrap_25069_24169.Models.ViewModels
         public string Name { get; set; } = "";
 
         [Required(ErrorMessage = "O Numero de Telefone do Utilizador é de preenchimento obrigatório.")]
-        [StringLength(19)]
+        [StringLength(9)]
         [RegularExpression(@"\+?[0-9]{9,18}", ErrorMessage = "O Numero de Telefone do Utilizador não respeita o formato desejado ex:914567899.")]
         public string CellPhone { get; set; } = "";
 

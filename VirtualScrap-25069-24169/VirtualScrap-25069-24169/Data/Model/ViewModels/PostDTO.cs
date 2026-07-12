@@ -14,7 +14,7 @@ namespace VirtualScrap_25069_24169.Models.ViewModels
         [StringLength(150)]
         public string Description { get; set; } = "";
 
-        [StringLength(19)]
+        [StringLength(9)]
         [RegularExpression(@"\+?[0-9]{9,18}", ErrorMessage = "Ocorreu um erro!")]
         public string CellPhone { get; set; } = "";
 
