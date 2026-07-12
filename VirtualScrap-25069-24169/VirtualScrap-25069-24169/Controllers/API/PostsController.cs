@@ -117,7 +117,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 CellPhone = dto.CellPhone,
                 // Data gerada no servidor
                 PostDate = DateTime.Now, 
-                Photo = string.IsNullOrEmpty(dto.Photo) ? "default_post.jpg" : dto.Photo,
+                Photo = string.IsNullOrEmpty(dto.Photo) ? "default_post_image.jpg" : dto.Photo,
                 Price = dto.Price,
                 Localizacao = dto.Localizacao,
                 CategoryFK = category.Id,
@@ -169,6 +169,23 @@ namespace VirtualScrap_25069_24169.Controllers.API
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.CategoryName);
             if (category == null) return BadRequest($"A categoria '{dto.CategoryName}' não existe.");
 
+            string newPhoto = string.IsNullOrEmpty(dto.Photo) ? "default_post_image.jpg" : dto.Photo;
+
+            //Verificar se existe foto nova no parâmetro e garante que a fotografia default não é eliminada
+            if (!string.IsNullOrEmpty(dto.Photo) && dto.Photo != post.Photo)
+            {
+                if (!string.IsNullOrEmpty(post.Photo) && post.Photo != "default_post_image.jpg")
+                {
+                    //Elimina a foto antiga do disco rigido
+                    var caminhoFotoAntiga = Path.Combine(_webHostEnvironment.WebRootPath, "images", post.Photo);
+                    if (System.IO.File.Exists(caminhoFotoAntiga))
+                    {
+                        System.IO.File.Delete(caminhoFotoAntiga);
+                    }
+                }
+                post.Photo = dto.Photo;
+            }
+
             // Atualizar os campos permitidos
             post.Title = dto.Title;
             post.Description = dto.Description;
@@ -177,8 +194,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
             post.Localizacao = dto.Localizacao;
             post.CategoryFK = category.Id;
 
-            if (!string.IsNullOrEmpty(dto.Photo))
-                post.Photo = dto.Photo;
+            dto.Photo = post.Photo;
 
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -230,7 +246,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 _context.Likes.RemoveRange(post.LikesList);
             }
 
-            if (!string.IsNullOrEmpty(post.Photo) && post.Photo != "default_post.jpg")
+            if (!string.IsNullOrEmpty(post.Photo) && post.Photo != "default_post_image.jpg")
             {
                 //Caminho para a pasta onde se encontra a imagem
                 string caminhoFotoPost = Path.Combine(_webHostEnvironment.WebRootPath, "images", post.Photo);

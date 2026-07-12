@@ -24,17 +24,9 @@
         <div class="col-12 col-md-6">
             <div class="card border-light shadow-sm overflow-hidden sticky-md-top" style="top: 20px; z-index: 1;">
                 <div class="ratio ratio-4x3 bg-light">
-                    @if (!string.IsNullOrEmpty(Model.Post.Photo) && Model.Post.Photo != "noImage.jpg")
-                    {
+                    
                         <img src="~/images/@Model.Post.Photo" class="img-fluid object-fit-cover" alt="@Model.Post.Title" asp-append-version="true" />
-                    }
-                    else
-                    {
-                        <div class="d-flex flex-column align-items-center justify-content-center text-muted bg-secondary-subtle">
-                            <span class="fs-4">📷</span>
-                            <span class="small mt-1">Sem foto disponível</span>
-                        </div>
-                    }
+                    
                 </div>
             </div>
         </div>

@@ -244,7 +244,7 @@ namespace VirtualScrap_25069_24169.Controllers.API
                 var caminhoFotoPost = Path.Combine(_webHostEnvironment.WebRootPath, "images", post.Photo);
 
                 // Verifica se o ficheiro existe mesmo no disco antes de tentar apagar para não dar erro, e se a foto tem o nome default_post.jpg
-                if (System.IO.File.Exists(caminhoFotoPost) && post.Photo != "default_post.jpg")
+                if (System.IO.File.Exists(caminhoFotoPost) && post.Photo != "default_post_image.jpg")
                 {
 
                     //Apaga do disco
